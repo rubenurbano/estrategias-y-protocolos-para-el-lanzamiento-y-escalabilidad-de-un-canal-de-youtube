@@ -1,0 +1,3020 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Estrategias Maestras para el Lanzamiento y Escalabilidad de YouTube by Rubén Sbarsky — V001</title>
+<style>
+/* ==========================================================================
+   SISTEMA DE DISEÑO & VARIABLES DE TEMA (DARK / LIGHT)
+   ========================================================================== */
+:root {
+  --bg-main: #0a0e1a;
+  --bg-card: #0f172a;
+  --bg-elevated: #162038;
+  --bg-input: #0b1120;
+  --border-subtle: #1e3a5f;
+  --border-strong: #2b548a;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent-primary: #38bdf8;
+  --accent-secondary: #818cf8;
+  --accent-glow: rgba(56, 189, 248, 0.22);
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --header-h: 58px;
+  --font-size-base: 16px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --shadow-card: 0 10px 30px -10px rgba(2, 6, 23, 0.75);
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-med: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="light"] {
+  --bg-main: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-elevated: #e2e8f0;
+  --bg-input: #f8fafc;
+  --border-subtle: #cbd5e1;
+  --border-strong: #94a3b8;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --accent-primary: #0284c7;
+  --accent-secondary: #4f46e5;
+  --accent-glow: rgba(2, 132, 199, 0.16);
+  --shadow-card: 0 8px 24px -8px rgba(15, 23, 42, 0.12);
+}
+
+/* ==========================================================================
+   RESET & BASE (MOBILE-FIRST 360px SAMSUNG GALAXY A02s OPTIMIZED)
+   ========================================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: var(--font-size-base);
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  line-height: 1.65;
+  overflow-x: hidden;
+  padding-top: calc(var(--header-h) + 52px);
+  padding-bottom: 90px;
+  transition: background-color var(--transition-med), color var(--transition-med);
+}
+
+/* Barra de progreso de lectura */
+#reading-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary), #f43f5e);
+  z-index: 100;
+  transition: width 0.1s linear;
+}
+
+/* ==========================================================================
+   BARRA SUPERIOR FIJA (CONTROLES GLOBALES + NAVEGACIÓN DE PESTAÑAS)
+   ========================================================================== */
+.top-shell {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  background: rgba(10, 14, 26, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+[data-theme="light"] .top-shell {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.topbar-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: var(--header-h);
+  padding: 0 10px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.brand-svg-mini {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+}
+
+.brand-label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+  display: none;
+}
+
+@media (min-width: 480px) {
+  .brand-label { display: inline-block; }
+}
+
+.search-box-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 110px;
+  max-width: 320px;
+}
+
+.search-input {
+  width: 100%;
+  height: 38px;
+  padding: 0 32px 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.search-input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.search-clear-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 4px;
+  display: none;
+}
+
+.utility-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.util-btn {
+  min-width: 38px;
+  min-height: 38px;
+  padding: 0 8px;
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.util-btn:hover, .util-btn:focus-visible {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  outline: none;
+}
+
+/* ==========================================================================
+   BARRA DE PESTAÑAS HORIZONTAL (CHIPS + BOTÓN ÍNDICE)
+   ========================================================================== */
+.nav-tabs-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  border-top: 1px solid rgba(30, 58, 95, 0.45);
+  max-width: 1280px;
+  margin: 0 auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.nav-tabs-bar::-webkit-scrollbar {
+  height: 4px;
+}
+
+.nav-tabs-bar::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 4px;
+}
+
+.chip {
+  flex-shrink: 0;
+  min-height: 42px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all var(--transition-fast);
+}
+
+.chip:hover, .chip:focus-visible {
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 1px;
+}
+
+.chip.active {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.22), rgba(129, 140, 248, 0.22));
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  font-weight: 700;
+  box-shadow: 0 0 14px var(--accent-glow);
+}
+
+#mb {
+  background: var(--bg-elevated);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   PANEL LATERAL DESLIZANTE DE ÍNDICE (#dr)
+   ========================================================================== */
+#dr {
+  position: fixed;
+  top: calc(var(--header-h) + 54px);
+  left: 0;
+  bottom: 0;
+  width: min(330px, 88vw);
+  background: #0f172a;
+  border-right: 1px solid #1e3a5f;
+  transform: translateX(-105%);
+  transition: transform 0.25s ease;
+  z-index: 45;
+  overflow-y: auto;
+  padding: 12px;
+  box-shadow: 12px 0 36px rgba(0, 0, 0, 0.65);
+}
+
+#dr.o {
+  transform: translateX(0);
+}
+
+#dr a {
+  display: flex;
+  align-items: center;
+  padding: 12px 14px;
+  margin-bottom: 4px;
+  border-radius: 8px;
+  color: #e2e8f0;
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  min-height: 44px;
+  border: 1px solid transparent;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+#dr a:hover, #dr a:focus-visible {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(56, 189, 248, 0.3);
+  outline: none;
+}
+
+#dr a.on {
+  background: rgba(0, 212, 255, 0.16);
+  color: #00d4ff;
+  font-weight: 700;
+  border-color: rgba(0, 212, 255, 0.4);
+}
+
+/* ==========================================================================
+   CONTENEDOR PRINCIPAL Y PESTAÑAS (SECTIONS)
+   ========================================================================== */
+.main-container {
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: 16px 12px 40px;
+}
+
+@media (min-width: 640px) {
+  .main-container {
+    padding: 24px 24px 56px;
+  }
+}
+
+.tab-section {
+  display: none;
+  animation: fadeSlideIn 0.28s ease-out;
+}
+
+.tab-section.active {
+  display: block;
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   TARJETAS, TIPOGRAFÍA Y ELEMENTOS DE CONTENIDO
+   ========================================================================== */
+.hero-header-card {
+  background: linear-gradient(160deg, var(--bg-card) 0%, #111c36 100%);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 18px 14px;
+  margin-bottom: 22px;
+  box-shadow: var(--shadow-card);
+}
+
+[data-theme="light"] .hero-header-card {
+  background: linear-gradient(160deg, #ffffff 0%, #e0f2fe 100%);
+}
+
+.hero-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.hero-logo-badge {
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.3);
+}
+
+.hero-main-title {
+  font-size: clamp(1.22rem, 4.4vw, 1.95rem);
+  font-weight: 800;
+  line-height: 1.22;
+  color: var(--text-primary);
+}
+
+.hero-main-title .author-tag {
+  color: var(--accent-primary);
+  display: inline-block;
+}
+
+.hero-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.94rem;
+  margin-bottom: 16px;
+}
+
+.hero-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+/* Contenedor SVG Hero & Créditos (Aspecto 4:5 en móvil, panorámico equilibrado en desktop) */
+.svg-stage-wrapper {
+  width: 100%;
+  max-width: 540px;
+  margin: 14px auto;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  background: #060a14;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.55);
+  position: relative;
+}
+
+.svg-stage-wrapper svg, .svg-stage-wrapper img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.svg-controls-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(15, 23, 42, 0.92);
+  border-top: 1px solid var(--border-subtle);
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+
+.btn-primary, .btn-secondary {
+  min-height: 44px;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #0284c7, #2563eb);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.45);
+}
+
+.btn-secondary {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.section-header-banner {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-left: 4px solid var(--accent-primary);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.section-header-banner h2 {
+  font-size: clamp(1.25rem, 4vw, 1.65rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.section-header-banner p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.content-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 18px;
+  box-shadow: var(--shadow-card);
+}
+
+@media (min-width: 640px) {
+  .content-card { padding: 22px; }
+}
+
+.content-card h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.content-card h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 14px 0 6px;
+}
+
+.content-card p {
+  margin-bottom: 10px;
+  color: var(--text-primary);
+}
+
+.content-card ul, .content-card ol {
+  margin: 8px 0 14px 20px;
+}
+
+.content-card li {
+  margin-bottom: 6px;
+}
+
+/* Badges y etiquetas pedagógicas */
+.pedagogy-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.badge-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 9px;
+  border-radius: 6px;
+  background: rgba(56, 189, 248, 0.14);
+  color: var(--accent-primary);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.callout-box {
+  background: var(--bg-elevated);
+  border-left: 4px solid var(--warning);
+  padding: 12px 14px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin: 12px 0;
+  font-size: 0.92rem;
+}
+
+.callout-box.info { border-left-color: var(--accent-primary); }
+.callout-box.success { border-left-color: var(--success); }
+.callout-box.danger { border-left-color: var(--danger); }
+
+/* Tablas responsivas sin desborde en 360px */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  margin: 14px 0;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+  min-width: 520px;
+}
+
+th, td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+th {
+  background: var(--bg-elevated);
+  color: var(--accent-primary);
+  font-weight: 700;
+}
+
+tr:last-child td { border-bottom: none; }
+
+/* Bloques copiables */
+.copy-block {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  margin: 10px 0;
+  position: relative;
+}
+
+.copy-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed var(--border-subtle);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.copy-code-text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.84rem;
+  color: var(--accent-primary);
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+.btn-copy, .btn-open-url {
+  min-height: 36px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.btn-copy:hover, .btn-open-url:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.url-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+/* ==========================================================================
+   ACORDEÓN DE 33 PREGUNTAS Y RESPUESTAS (Q&A)
+   ========================================================================== */
+.qa-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+  background: var(--bg-card);
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+}
+
+.qa-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.qa-question-btn {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 14px 16px;
+  color: var(--text-primary);
+  font-size: 0.94rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+}
+
+.qa-question-btn:hover {
+  background: rgba(56, 189, 248, 0.06);
+}
+
+.qa-toggle-icon {
+  color: var(--accent-primary);
+  font-weight: 900;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.qa-answer-panel {
+  display: none;
+  padding: 0 16px 14px 16px;
+  color: var(--text-secondary);
+  border-top: 1px dashed var(--border-subtle);
+  padding-top: 12px;
+  font-size: 0.92rem;
+}
+
+.qa-item.open .qa-answer-panel {
+  display: block;
+}
+
+/* ==========================================================================
+   CHECKLIST INTERACTIVO CON LOCALSTORAGE
+   ========================================================================== */
+.checklist-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.checklist-row input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  accent-color: var(--accent-primary);
+  flex-shrink: 0;
+}
+
+.checklist-row.checked span {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   BOTONES DE NAVEGACIÓN INFERIOR ENTRE PESTAÑAS (ANTERIOR / SIGUIENTE)
+   ========================================================================== */
+.tab-footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.tab-footer-nav .nav-step-btn {
+  flex: 1 1 140px;
+  min-height: 48px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-strong);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all var(--transition-fast);
+}
+
+.tab-footer-nav .nav-step-btn:hover {
+  border-color: var(--accent-primary);
+  background: var(--bg-elevated);
+  color: var(--accent-primary);
+}
+
+.tab-footer-nav .nav-step-btn.next {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.18), rgba(37, 99, 235, 0.25));
+  border-color: var(--accent-primary);
+}
+
+/* ==========================================================================
+   BOTONES FLOTANTES ARRASTRABLES (INICIO Y ARRIBA)
+   ========================================================================== */
+.floating-fab {
+  position: fixed;
+  z-index: 60;
+  min-width: 52px;
+  height: 48px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--accent-primary);
+  background: rgba(15, 23, 42, 0.94);
+  color: #38bdf8;
+  font-weight: 800;
+  font-size: 0.8rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.65), 0 0 14px rgba(56, 189, 248, 0.35);
+  cursor: grab;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  user-select: none;
+  touch-action: none;
+}
+
+.floating-fab:active {
+  cursor: grabbing;
+  transform: scale(0.96);
+}
+
+#fab-home {
+  bottom: 18px;
+  left: 14px;
+}
+
+#fab-top {
+  bottom: 18px;
+  right: 14px;
+}
+
+/* ==========================================================================
+   TOAST NOTIFICATION & BUSCADOR OVERLAY
+   ========================================================================== */
+#toast-feedback {
+  position: fixed;
+  bottom: 78px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #0f172a;
+  color: #38bdf8;
+  border: 1px solid #38bdf8;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 90;
+  transition: all 0.22s ease;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+  max-width: 90vw;
+  text-align: center;
+}
+
+#toast-feedback.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.search-results-banner {
+  background: var(--bg-card);
+  border: 1px solid var(--accent-primary);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 20px;
+  display: none;
+}
+
+.search-result-hit {
+  padding: 10px;
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+}
+
+.search-result-hit:hover {
+  background: var(--bg-elevated);
+}
+
+/* ==========================================================================
+   ANIMACIONES SVG MULTICAPA & PREFERS-REDUCED-MOTION
+   ========================================================================== */
+@keyframes pulseCore {
+  0%, 100% { transform: scale(1); opacity: 0.92; }
+  50% { transform: scale(1.06); opacity: 1; }
+}
+
+@keyframes orbitSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes orbitReverse {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes dashFlow {
+  to { stroke-dashoffset: -120; }
+}
+
+@keyframes floatNode {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-7px); }
+}
+
+@keyframes scanBeam {
+  0%, 100% { transform: translateY(-45px); opacity: 0.2; }
+  50% { transform: translateY(45px); opacity: 0.85; }
+}
+
+.svg-anim-core { transform-origin: 250px 300px; animation: pulseCore 3.6s ease-in-out infinite; }
+.svg-anim-orbit-1 { transform-origin: 250px 300px; animation: orbitSlow 22s linear infinite; }
+.svg-anim-orbit-2 { transform-origin: 250px 300px; animation: orbitReverse 16s linear infinite; }
+.svg-anim-flow { stroke-dasharray: 10 10; animation: dashFlow 3s linear infinite; }
+.svg-anim-float-a { animation: floatNode 4.2s ease-in-out infinite; }
+.svg-anim-float-b { animation: floatNode 5.1s ease-in-out infinite 1.1s; }
+.svg-anim-scan { animation: scanBeam 4.5s ease-in-out infinite; }
+
+.svg-paused * {
+  animation-play-state: paused !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .svg-anim-core, .svg-anim-orbit-1, .svg-anim-orbit-2,
+  .svg-anim-flow, .svg-anim-float-a, .svg-anim-float-b, .svg-anim-scan {
+    animation: none !important;
+  }
+}
+
+/* ==========================================================================
+   CRÉDITOS DESTACADOS
+   ========================================================================== */
+.credits-hero-author {
+  font-size: clamp(1.8rem, 6vw, 2.75rem);
+  font-weight: 900;
+  text-align: center;
+  background: linear-gradient(90deg, #38bdf8, #818cf8, #38bdf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 16px 0 4px;
+  letter-spacing: -0.02em;
+}
+
+.credits-role-subtitle {
+  text-align: center;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 18px;
+}
+
+/* ==========================================================================
+   HOJA DE ESTILOS DE IMPRESIÓN / PDF (A4 VERTICAL)
+   ========================================================================== */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 14mm 12mm;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    padding: 0 !important;
+    font-size: 11pt !important;
+  }
+
+  .top-shell, #dr, .floating-fab, #toast-feedback, .tab-footer-nav,
+  .qa-toolbar, .btn-copy, .btn-open-url, .svg-controls-bar,
+  .search-results-banner, .hero-actions-row {
+    display: none !important;
+  }
+
+  .tab-section {
+    display: block !important;
+    opacity: 1 !important;
+    transform: none !important;
+    margin-bottom: 20px !important;
+  }
+
+  .content-card, .hero-header-card, .section-header-banner, .qa-item {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+
+  .qa-answer-panel {
+    display: block !important;
+    color: #1e293b !important;
+  }
+
+  h1, h2, h3, h4, p, li, td, th, span {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+  }
+
+  table {
+    min-width: 100% !important;
+    font-size: 9.5pt !important;
+  }
+
+  .svg-stage-wrapper {
+    background: #0a0e1a !important;
+    max-width: 340px !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Barra de progreso superior -->
+<div id="reading-progress-bar" aria-hidden="true"></div>
+
+<!-- ==========================================================================
+     PLANTILLA MAESTRA SVG ÚNICA (OCULTA PARA CLONADO DINÁMICO CON IDs ÚNICOS)
+     Representa la arquitectura de un Canal de YouTube Blindado: Escudo FIDO,
+     Núcleo Audiovisual Play, Red Neuronal de Recomendación (Candidate/Ranking)
+     y Flujos de Series Encadenadas.
+     ========================================================================== -->
+<template id="master-hero-svg-template">
+  <svg viewBox="0 0 500 600" width="100%" height="100%" role="img" aria-label="Ilustración técnica animada del ecosistema de ingeniería de YouTube: escudo de ciberseguridad FIDO, botón central de reproducción, red neuronal de recomendaciones y nodos de retención en serie" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="__PREFIX__bgGlow" cx="50%" cy="50%" r="55%">
+        <stop offset="0%" stop-color="#0ea5e9" stop-opacity="0.32"/>
+        <stop offset="55%" stop-color="#1e1b4b" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#060a14" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="__PREFIX__shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#38bdf8"/>
+        <stop offset="50%" stop-color="#818cf8"/>
+        <stop offset="100%" stop-color="#f43f5e"/>
+      </linearGradient>
+      <linearGradient id="__PREFIX__playGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#ff0033"/>
+        <stop offset="100%" stop-color="#be123c"/>
+      </linearGradient>
+      <filter id="__PREFIX__neonGlow" x="-25%" y="-25%" width="150%" height="150%">
+        <feGaussianBlur stdDeviation="5" result="blur"/>
+        <feMerge>
+          <feMergeNode in="blur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <pattern id="__PREFIX__techGrid" width="30" height="30" patternUnits="userSpaceOnUse">
+        <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#1e3a5f" stroke-width="0.6" stroke-opacity="0.45"/>
+      </pattern>
+    </defs>
+
+    <!-- Fondo técnico y resplandor radial -->
+    <rect width="500" height="600" fill="#060a14"/>
+    <rect width="500" height="600" fill="url(#__PREFIX__techGrid)"/>
+    <circle cx="250" cy="300" r="245" fill="url(#__PREFIX__bgGlow)"/>
+
+    <!-- Anillos orbitales de Red Neuronal (Candidate Generation & Ranking) -->
+    <g class="svg-anim-orbit-1">
+      <circle cx="250" cy="300" r="195" fill="none" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="8 12" stroke-opacity="0.55"/>
+      <circle cx="250" cy="105" r="7" fill="#38bdf8" filter="url(#__PREFIX__neonGlow)"/>
+      <circle cx="250" cy="495" r="7" fill="#818cf8" filter="url(#__PREFIX__neonGlow)"/>
+      <circle cx="55" cy="300" r="6" fill="#10b981"/>
+      <circle cx="445" cy="300" r="6" fill="#f59e0b"/>
+    </g>
+
+    <g class="svg-anim-orbit-2">
+      <circle cx="250" cy="300" r="150" fill="none" stroke="#818cf8" stroke-width="1.5" stroke-dasharray="18 10 4 10" stroke-opacity="0.65"/>
+      <polygon points="250,144 256,154 244,154" fill="#38bdf8"/>
+      <polygon points="250,456 256,446 244,446" fill="#f43f5e"/>
+    </g>
+
+    <!-- Líneas de flujo de datos neuronales -->
+    <g stroke="#38bdf8" stroke-width="1.6" stroke-opacity="0.65" fill="none">
+      <path class="svg-anim-flow" d="M 75,135 Q 160,210 215,265"/>
+      <path class="svg-anim-flow" d="M 425,135 Q 340,210 285,265"/>
+      <path class="svg-anim-flow" d="M 75,465 Q 160,390 215,335"/>
+      <path class="svg-anim-flow" d="M 425,465 Q 340,390 285,335"/>
+    </g>
+
+    <!-- Nodos satelitales de arquitectura (4 pilares del tutorial) -->
+    <g class="svg-anim-float-a">
+      <rect x="36" y="96" width="96" height="44" rx="10" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+      <text x="84" y="115" fill="#38bdf8" font-size="10" font-weight="bold" text-anchor="middle" font-family="sans-serif">FIDO PASSKEY</text>
+      <text x="84" y="130" fill="#94a3b8" font-size="9" text-anchor="middle" font-family="sans-serif">Blindaje Raíz</text>
+
+      <rect x="368" y="458" width="96" height="44" rx="10" fill="#0f172a" stroke="#10b981" stroke-width="1.5"/>
+      <text x="416" y="477" fill="#10b981" font-size="10" font-weight="bold" text-anchor="middle" font-family="sans-serif">4.6x SESIÓN</text>
+      <text x="416" y="492" fill="#94a3b8" font-size="9" text-anchor="middle" font-family="sans-serif">Series Encadenadas</text>
+    </g>
+
+    <g class="svg-anim-float-b">
+      <rect x="368" y="96" width="96" height="44" rx="10" fill="#0f172a" stroke="#818cf8" stroke-width="1.5"/>
+      <text x="416" y="115" fill="#818cf8" font-size="10" font-weight="bold" text-anchor="middle" font-family="sans-serif">VP09 / AV01</text>
+      <text x="416" y="130" fill="#94a3b8" font-size="9" text-anchor="middle" font-family="sans-serif">1440p / 48kHz</text>
+
+      <rect x="36" y="458" width="96" height="44" rx="10" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="84" y="477" fill="#f59e0b" font-size="10" font-weight="bold" text-anchor="middle" font-family="sans-serif">RANKING IA</text>
+      <text x="84" y="492" fill="#94a3b8" font-size="9" text-anchor="middle" font-family="sans-serif">Valued Watchtime</text>
+    </g>
+
+    <!-- Escudo Central de Gobernanza y Núcleo Audiovisual -->
+    <g class="svg-anim-core">
+      <path d="M 250 185 L 342 222 L 342 304 C 342 365 302 406 250 426 C 198 406 158 365 158 304 L 158 222 Z"
+            fill="#0f172a" stroke="url(#__PREFIX__shieldGrad)" stroke-width="3.5" filter="url(#__PREFIX__neonGlow)"/>
+      <path d="M 250 198 L 329 230 L 329 302 C 329 354 294 391 250 409 C 206 391 171 354 171 302 L 171 230 Z"
+            fill="none" stroke="#38bdf8" stroke-width="1" stroke-opacity="0.45"/>
+
+      <!-- Botón Central YouTube Studio Engineering -->
+      <rect x="204" y="268" width="92" height="64" rx="16" fill="url(#__PREFIX__playGrad)" filter="url(#__PREFIX__neonGlow)"/>
+      <polygon points="240,285 240,315 268,300" fill="#ffffff"/>
+    </g>
+
+    <!-- Haz de escaneo Content ID / Analítica -->
+    <line class="svg-anim-scan" x1="175" y1="300" x2="325" y2="300" stroke="#38bdf8" stroke-width="2" stroke-opacity="0.75"/>
+
+    <!-- Telemetría inferior integrada -->
+    <rect x="85" y="538" width="330" height="34" rx="17" fill="#0f172a" stroke="#1e3a5f" stroke-width="1.2"/>
+    <text x="250" y="559" fill="#e2e8f0" font-size="11" font-weight="bold" text-anchor="middle" letter-spacing="1" font-family="monospace">YOUTUBE ENGINEERING • ARQUITECTURA 2027</text>
+  </svg>
+</template>
+
+<!-- ==========================================================================
+     CABECERA SUPERIOR FIJA Y NAVEGACIÓN DE PESTAÑAS
+     ========================================================================== -->
+<header class="top-shell">
+  <div class="topbar-controls">
+    <div class="brand-lockup">
+      <!-- Logo Tutoriales IA integrado en SVG compacto -->
+      <div class="brand-svg-mini" title="Logo Tutoriales IA">
+        <svg viewBox="0 0 100 100" width="100%" height="100%" role="img" aria-label="Logo IA Tutoriales">
+          <defs>
+            <linearGradient id="miniLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#38bdf8"/>
+              <stop offset="100%" stop-color="#818cf8"/>
+            </linearGradient>
+          </defs>
+          <rect width="100" height="100" rx="18" fill="#060d1f"/>
+          <path d="M50 10 L84 24 L84 52 C84 73 69 87 50 93 C31 87 16 73 16 52 L16 24 Z" fill="none" stroke="url(#miniLogoGrad)" stroke-width="5"/>
+          <path d="M46 26 C34 26 28 35 28 45 C28 55 34 64 46 64" fill="none" stroke="#38bdf8" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="64" cy="34" r="3.5" fill="#818cf8"/>
+          <circle cx="70" cy="46" r="3.5" fill="#38bdf8"/>
+          <circle cx="64" cy="58" r="3.5" fill="#818cf8"/>
+          <line x1="54" y1="45" x2="70" y2="46" stroke="#818cf8" stroke-width="2.5"/>
+          <circle cx="50" cy="45" r="11" fill="#0f172a" stroke="#38bdf8" stroke-width="2.5"/>
+          <polygon points="47,40 47,50 56,45" fill="#38bdf8"/>
+          <text x="50" y="81" fill="#38bdf8" font-size="15" font-weight="900" text-anchor="middle" font-family="sans-serif">IA</text>
+        </svg>
+      </div>
+      <span class="brand-label">IA Tutoriales</span>
+    </div>
+
+    <!-- Buscador en tiempo real -->
+    <div class="search-box-wrap">
+      <input type="search" id="global-search-input" class="search-input" placeholder="Buscar en el tutorial..." aria-label="Buscar en todo el contenido del tutorial">
+      <button type="button" id="search-clear-btn" class="search-clear-btn" aria-label="Limpiar búsqueda">✕</button>
+    </div>
+
+    <!-- Controles de accesibilidad e impresión -->
+    <div class="utility-actions">
+      <button type="button" id="btn-font-dec" class="util-btn" aria-label="Reducir tamaño de letra" title="Reducir tamaño de letra">A-</button>
+      <button type="button" id="btn-font-inc" class="util-btn" aria-label="Aumentar tamaño de letra" title="Aumentar tamaño de letra">A+</button>
+      <button type="button" id="btn-theme-toggle" class="util-btn" aria-label="Alternar tema oscuro o claro" title="Cambiar tema">🌓</button>
+      <button type="button" id="btn-print-pdf" class="util-btn" aria-label="Imprimir o guardar como PDF" title="Imprimir / PDF">🖨️</button>
+    </div>
+  </div>
+
+  <!-- Barra de pestañas con botón Índice como primer elemento -->
+  <nav class="nav-tabs-bar" aria-label="Navegación principal por secciones">
+    <button type="button" class="chip" id="mb" aria-label="Abrir índice" aria-expanded="false">☰ Índice</button>
+    <button type="button" class="chip active" data-tab="0">Inicio</button>
+    <button type="button" class="chip" data-tab="1">Seguridad y Legal</button>
+    <button type="button" class="chip" data-tab="2">Nicho y Monetización</button>
+    <button type="button" class="chip" data-tab="3">Codificación y Equipo</button>
+    <button type="button" class="chip" data-tab="4">Identidad y Empaquetado</button>
+    <button type="button" class="chip" data-tab="5">Series y Sprint</button>
+    <button type="button" class="chip" data-tab="6">Algoritmo y Analítica</button>
+    <button type="button" class="chip" data-tab="7">10 Casos Prácticos</button>
+    <button type="button" class="chip" data-tab="8">Buenas Prácticas</button>
+    <button type="button" class="chip" data-tab="9">10 Proyectos</button>
+    <button type="button" class="chip" data-tab="10">33 Preguntas (Q&A)</button>
+    <button type="button" class="chip" data-tab="11">Errores</button>
+    <button type="button" class="chip" data-tab="12">Prompts</button>
+    <button type="button" class="chip" data-tab="13">Glosario</button>
+    <button type="button" class="chip" data-tab="14">Fuentes</button>
+    <button type="button" class="chip" data-tab="15">Créditos</button>
+  </nav>
+</header>
+
+<!-- Panel lateral del índice sándwich -->
+<aside id="dr" aria-label="Índice general de pestañas"></aside>
+
+<!-- ==========================================================================
+     CONTENIDO PRINCIPAL DE LAS 16 PESTAÑAS
+     ========================================================================== -->
+<main class="main-container" id="main-content">
+
+  <!-- Contenedor dinámico de resultados de búsqueda -->
+  <div id="search-results-panel" class="search-results-banner" role="region" aria-live="polite"></div>
+
+  <!-- ========================================================================
+       PESTAÑA 0: INICIO
+       ======================================================================== -->
+  <section class="tab-section active" id="sec-0" data-t="Inicio — Guía Maestra de YouTube">
+    <div class="hero-header-card">
+      <div class="hero-title-row">
+        <!-- Logo Tutoriales IA integrado en SVG a la izquierda del título principal -->
+        <div class="hero-logo-badge" title="Tutoriales IA">
+          <svg viewBox="0 0 100 100" width="100%" height="100%" role="img" aria-label="Emblema oficial Tutoriales IA">
+            <defs>
+              <linearGradient id="heroLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#38bdf8"/>
+                <stop offset="50%" stop-color="#818cf8"/>
+                <stop offset="100%" stop-color="#c084fc"/>
+              </linearGradient>
+            </defs>
+            <rect width="100" height="100" fill="#060d1f"/>
+            <path d="M50 8 L86 22 L86 52 C86 74 70 89 50 95 C30 89 14 74 14 52 L14 22 Z" fill="#0b152c" stroke="url(#heroLogoGrad)" stroke-width="4.5"/>
+            <path d="M45 24 C32 24 25 34 25 45 C25 56 32 66 45 66" fill="none" stroke="#38bdf8" stroke-width="3.8" stroke-linecap="round"/>
+            <path d="M44 33 C36 33 33 39 33 45 C33 51 36 57 44 57" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="65" cy="31" r="3.5" fill="#818cf8"/>
+            <circle cx="72" cy="45" r="3.5" fill="#38bdf8"/>
+            <circle cx="65" cy="59" r="3.5" fill="#c084fc"/>
+            <line x1="55" y1="39" x2="65" y2="31" stroke="#818cf8" stroke-width="2"/>
+            <line x1="56" y1="45" x2="72" y2="45" stroke="#38bdf8" stroke-width="2"/>
+            <line x1="55" y1="51" x2="65" y2="59" stroke="#c084fc" stroke-width="2"/>
+            <circle cx="50" cy="45" r="11" fill="#0f172a" stroke="#38bdf8" stroke-width="2.5"/>
+            <polygon points="47,40 47,50 56,45" fill="#38bdf8"/>
+            <text x="50" y="79" fill="url(#heroLogoGrad)" font-size="16" font-weight="900" text-anchor="middle" font-family="sans-serif">IA</text>
+            <text x="50" y="89" fill="#e2e8f0" font-size="7.5" font-weight="800" text-anchor="middle" letter-spacing="0.6" font-family="sans-serif">TUTORIALES</text>
+          </svg>
+        </div>
+        <h1 class="hero-main-title">Estrategias y Protocolos para el Lanzamiento y Escalabilidad de un Canal de YouTube <span class="author-tag">by Rubén Sbarsky</span></h1>
+      </div>
+
+      <p class="hero-subtitle">
+        Manual maestro de instrucción técnica basado en la masterclass de <strong>Eloisa Wolf</strong> (exmiembro de Google y YouTube) y la documentación oficial de ingeniería de <strong>Google / YouTube Engineering</strong>. Diseñado paso a paso para lanzar, blindar y escalar canales profesionales sin conocimientos técnicos previos.
+      </p>
+
+      <!-- Instancia 1 del SVG Hero Animado Multicapa -->
+      <div class="svg-stage-wrapper" id="svg-mount-inicio"></div>
+      <div class="svg-controls-bar">
+        <span>Diagrama interactivo de ingeniería YouTube</span>
+        <button type="button" class="btn-copy" id="btn-toggle-svg-anim" aria-pressed="false">⏸ Pausar animación</button>
+      </div>
+
+      <div class="hero-actions-row">
+        <button type="button" class="btn-primary" onclick="navigateToTab(1)">🚀 Comenzar Tutorial Paso a Paso</button>
+        <button type="button" class="btn-secondary" id="ix">☰ Ver índice completo</button>
+        <button type="button" class="btn-secondary" onclick="navigateToTab(10)">❓ Ir a 33 Preguntas (Q&A)</button>
+      </div>
+    </div>
+
+    <div class="content-card">
+      <h3>🧭 Cómo aprovechar este manual interactivo</h3>
+      <p>Este sistema de aprendizaje transforma la arquitectura interna de YouTube en procedimientos accionables. Cada pestaña aborda un pilar crítico del ecosistema:</p>
+      <ul>
+        <li><strong>Secuencia Pedagógica Clara:</strong> Cada módulo explica <em>Qué es, Para qué sirve, Por qué importa y Cómo se ejecuta</em> paso a paso.</li>
+        <li><strong>Progreso Persistente:</strong> Tus listas de verificación, tamaño de lectura y tema visual se guardan automáticamente en tu dispositivo.</li>
+        <li><strong>Optimización Móvil:</strong> Interfaz fluida diseñada para lectura cómoda en pantallas compactas (como Samsung Galaxy A02s de 360px) y exportación limpia a PDF en formato A4.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       PESTAÑA 1: SEGURIDAD Y LEGAL (MÓDULO 1)
+       ======================================================================== -->
+  <section class="tab-section" id="sec-1" data-t="Ciberseguridad, Gobernanza y Blindaje Legal">
+    <div class="section-header-banner">
+      <h2>Módulo 1: Fundamentos de Ciberseguridad, Gobernanza y Blindaje Jurídico-Técnico</h2>
+      <p>Protección patrimonial del canal, autenticación criptográfica FIDO, roles de YouTube Studio y marco regulatorio.</p>
+    </div>
+
+    <!-- 1.1 Propiedad raíz -->
+    <article class="content-card">
+      <div class="pedagogy-strip">
+        <span class="badge-tag">1.1 Propiedad Raíz</span>
+        <span class="badge-tag">Blindaje Patrimonial</span>
+      </div>
+      <h3>1.1. Propiedad raíz del canal: El principio del correo de creación</h3>
+      <p><strong>Qué es y por qué importa:</strong> El activo digital más valioso de un creador no son sus vídeos editados ni sus suscriptores visibles, sino el <strong>correo electrónico raíz</strong> con el cual se dio de alta la cuenta de Google asociada al canal. En la arquitectura de Google, el propietario inmutable del correo de registro es el propietario legal y técnico absoluto del canal.</p>
+
+      <div class="callout-box danger">
+        <strong>Riesgos habituales documentados:</strong>
+        <ul>
+          <li>Sociedades o matrimonios donde una parte aporta el rostro o la marca y la otra gestiona el registro con un correo personal; ante una ruptura, quien conserva el correo retiene la propiedad unilateral.</li>
+          <li>Contratación de agencias o consultoras externas que crean el canal bajo su propia infraestructura de correos; al rescindir el contrato comercial, el creador pierde el control total de su biblioteca y activos.</li>
+        </ul>
+      </div>
+
+      <h4>Procedimiento de aislamiento preventivo (Paso a paso):</h4>
+      <ol>
+        <li>Acceda a <strong>Google Accounts</strong> y cree una cuenta de correo electrónico exclusiva para el canal.</li>
+        <li>Mantenga esta cuenta en estricta reserva: <strong>no debe compartirse</strong> con ningún colaborador, empleado o agencia.</li>
+        <li>No utilice este correo en formularios de contacto públicos, boletines, redes sociales secundarias ni acuerdos de patrocinio.</li>
+        <li>Reserve una dirección de correo alternativa visible públicamente para fines comerciales, completamente desvinculada del acceso raíz.</li>
+      </ol>
+    </article>
+
+    <!-- 1.2 Passkeys y 2SV -->
+    <article class="content-card">
+      <div class="pedagogy-strip">
+        <span class="badge-tag">1.2 Ciberseguridad</span>
+        <span class="badge-tag">Criptografía FIDO</span>
+      </div>
+      <h3>1.2. Protocolo de blindaje de acceso: Passkeys y Verificación en dos pasos (2SV)</h3>
+      <p>El secuestro de canales (<em>session hijacking</em>, robo de <em>cookies</em> o <em>phishing</em>) suele ejecutarse mediante la suplantación de identidad o el compromiso de contraseñas tradicionales. Para alcanzar el nivel óptimo de protección ejecute este protocolo:</p>
+      <ol>
+        <li>Inicie sesión en la cuenta Google raíz y diríjase al apartado <strong>Seguridad</strong>.</li>
+        <li>Active la <strong>Verificación en dos pasos (2SV)</strong> mediante aplicaciones autenticadoras o llaves físicas de seguridad.</li>
+        <li>Configure <strong>Llaves de acceso (Passkeys)</strong> basadas en criptografía FIDO. Las llaves de acceso vinculan el inicio de sesión a sus dispositivos biométricos de confianza (huella dactilar, reconocimiento facial o PIN seguro del hardware), imposibilitando que un tercero intercepte credenciales mediante sitios web fraudulentos.</li>
+      </ol>
+    </article>
+
+    <!-- 1.3 Matriz de gobernanza -->
+    <article class="content-card">
+      <div class="pedagogy-strip">
+        <span class="badge-tag">1.3 Gobernanza</span>
+        <span class="badge-tag">YouTube Studio</span>
+      </div>
+      <h3>1.3. Matriz de gobernanza y roles en YouTube Studio</h3>
+      <p>Nunca proporcione la contraseña del correo raíz para delegar tareas operativas. YouTube Studio dispone de un sistema granular de permisos nativo:</p>
+
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Rol en YouTube Studio</th>
+              <th>Capacidades Operativas</th>
+              <th>Acceso Financiero / Crítico</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Propietario</strong></td>
+              <td>Control total sobre todo el ecosistema del canal.</td>
+              <td>Único rol capacitado para transferir propiedad, borrar el canal o eliminar permisos altos.</td>
+            </tr>
+            <tr>
+              <td><strong>Administrador</strong></td>
+              <td>Añade o revoca roles (excepto propietario) y gestiona toda la operación.</td>
+              <td>Acceso financiero completo, pero <strong>no puede eliminar el canal</strong>.</td>
+            </tr>
+            <tr>
+              <td><strong>Editor</strong></td>
+              <td>Edita metadatos, sube vídeos, programa estrenos y modifica contenido.</td>
+              <td>Visualiza métricas analíticas completas, incluidos datos de monetización e ingresos.</td>
+            </tr>
+            <tr>
+              <td><strong>Editor limitado</strong></td>
+              <td>Idénticas facultades operativas de carga y edición que el Editor.</td>
+              <td><strong>Restricción absoluta sobre los ingresos</strong> (no puede ver datos financieros).</td>
+            </tr>
+            <tr>
+              <td><strong>Lector / Lector limitado</strong></td>
+              <td>Visualiza estadísticas y paneles en modo solo lectura sin editar.</td>
+              <td>Con acceso a datos de ingresos (Lector) o sin acceso financiero (Lector limitado).</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout-box success">
+        <strong>Regla de asignación operativa:</strong> Si contrata a un editor de vídeo o gestor de carga, asígnele estrictamente el rol de <strong>Editor limitado</strong>. Revise trimestralmente la lista de usuarios con acceso y revoque credenciales de contratistas cuya relación laboral haya finalizado.
+      </div>
+    </article>
+
+    <!-- 1.4 y 1.5 Marco regulatorio y Propiedad intelectual -->
+    <article class="content-card">
+      <div class="pedagogy-strip">
+        <span class="badge-tag">1.4 Lineamientos y YPP</span>
+        <span class="badge-tag">1.5 Fair Use y Content ID</span>
+      </div>
+      <h3>1.4. Marco regulatorio: Lineamientos de la Comunidad y YPP</h3>
+      <ul>
+        <li><strong>Faltas a los Lineamientos de la Comunidad (Community Guidelines Strikes):</strong> Sanciones aplicadas por contenido de odio, violencia gráfica, desinformación médica perjudicial, spam o prácticas engañosas. Una primera infracción genera una advertencia (<em>warning</em>); <strong>tres faltas en un plazo de 90 días</strong> conllevan la terminación definitiva e irrevocable del canal.</li>
+        <li><strong>Elegibilidad para el Programa de Partners de YouTube (YPP):</strong> Exige umbrales verificados de suscriptores y horas de visualización pública válidas (o visualizaciones en Shorts), además de un historial libre de faltas activas y la vinculación a una cuenta de AdSense debidamente auditada.</li>
+      </ul>
+
+      <h3>1.5. Propiedad intelectual y automatización: Fair Use y Content ID</h3>
+      <ul>
+        <li><strong>Content ID:</strong> Sistema automatizado de huellas digitales de audio y vídeo de Google. Cuando un creador sube un archivo, Content ID coteja los fotogramas y pistas sonoras con una base de datos global de titulares de derechos. Las consecuencias automáticas pueden incluir el bloqueo de visualización, la monetización a favor del titular reclamante o la inserción de publicidad ajena.</li>
+        <li><strong>Uso Legítimo (Fair Use):</strong> Doctrina legal bajo la jurisdicción de EE. UU. evaluada en tribunales mediante cuatro factores: (1) propósito transformativo de la obra, (2) naturaleza de la obra protegida, (3) cantidad utilizada y (4) impacto en el mercado potencial. El etiquetado de <em>"no copyright intended"</em> o la simple cita del autor <strong>no eximen de infracción legal</strong> ante reclamaciones formales (DMCA).</li>
+      </ul>
+    </article>
+  </section>
+
+  <!-- ========================================================================
+       PESTAÑA 2: NICHO Y MONETIZACIÓN (MÓDULO 2)
+       ======================================================================== -->
+  <section class="tab-section" id="sec-2" data-t="Arquitectura Estratégica, Nicho y Monetización">
+    <div class="section-header-banner">
+      <h2>Módulo 2: Arquitectura Estratégica, Definición de Nicho y Modelos de Monetización</h2>
+      <p>Diseño del cliente ideal (avatar), verticalidad temática y diversificación de flujos de ingresos más allá de AdSense.</p>
+    </div>
+
+    <article class="content-card">
+      <h3>2.1. Definición del cliente ideal (Avatar)</h3>
+      <p>Un canal exitoso no intenta hablarle a todo el mundo. Debe concebirse para resolver problemas concretos, educar o acompañar a un perfil humano claramente definido según la naturaleza de su contenido:</p>
+      <ul>
+        <li><strong>Canales Educativos / Solución de Problemas:</strong> Centrados en la intención de búsqueda del usuario, alta retención por valor instructivo y fuerte autoridad profesional percibida.</li>
+        <li><strong>Canales de Entretenimiento:</strong> Dependientes del carisma, volumen masivo de reproducciones y alta dependencia del CTR en páginas de inicio.</li>
+        <li><strong>Canales Informativos / Noticias:</strong> Exigen una frecuencia de publicación diaria o inmediata, con rápida caducidad del valor informativo del contenido.</li>
+      </ul>
+    </article>
+
+    <article class="content-card">
+      <h3>2.2. Selección y validación del subnicho</h3>
+      <p>La especificidad vertical acelera el crecimiento inicial. En lugar de abordar temáticas amplias y altamente saturadas como "salud" o "finanzas", la estrategia profesional exige profundizar en un subnicho operativo (por ejemplo: <em>"salud funcional y recomposición corporal para mujeres mayores de 40 años en etapa de perimenopausia"</em>).</p>
+      <div class="callout-box danger">
+        <strong>Riesgo de dispersión de audiencia:</strong> Alterar drásticamente el público objetivo desorienta a la audiencia fidelizada y distorsiona el histórico de retención en la red neuronal de recomendación, provocando el abandono masivo de visualizaciones.
+      </div>
+    </article>
+
+    <article class="content-card">
+      <h3>2.3. Diversificación de flujos de ingresos</h3>
+      <p>AdSense no debe ser la única fuente de sostenibilidad financiera de un proyecto audiovisual profesional. Estructura tus ingresos en cinco niveles:</p>
+      <ol>
+        <li><strong>AdSense (Publicidad programática):</strong> Altamente dependiente del volumen total de reproducciones y del CPM específico del nicho (finanzas y software poseen CPMs elevados; entretenimiento y humor registran CPMs sustancialmente más bajos).</li>
+        <li><strong>Servicios y Consultoría de Alto Valor:</strong> Requiere bajo volumen de visualizaciones pero altísima autoridad técnica para convertir espectadores en clientes.</li>
+        <li><strong>Infoproductos y Productos Digitales:</strong> Cursos avanzados, membresías cerradas, plantillas operativas y guías especializadas.</li>
+        <li><strong>Comercio Electrónico / Productos Físicos:</strong> Mercancía de marca o soluciones físicas directas a las necesidades del avatar.</li>
+        <li><strong>Marketing de Afiliados y Patrocinios Directos:</strong> Integraciones comerciales con marcas validadas dentro del subnicho.</li>
+      </ol>
+
+      <h3>2.4. Inteligencia de mercado: Análisis competitivo preliminar</h3>
+      <p>Antes de grabar el primer vídeo, audita los canales referentes de tu subnicho para validar demanda empírica: identifica qué preguntas frecuentes deja la audiencia en los comentarios sin responder y qué formatos obtienen mayor tracción sostenida.</p>
+    </article>
+  </section>
+
+  <!-- ========================================================================
+       PESTAÑA 3: CODIFICACIÓN Y EQUIPO (MÓDULO 3)
+       ======================================================================== -->
+  <section class="tab-section" id="sec-3" data-t="Infraestructura Técnica, Codificación y Equipo">
+    <div class="section-header-banner">
+      <h2>Módulo 3: Infraestructura Técnica, Codificación y Especificaciones de Entrega Audiovisual</h2>
+      <p>Parámetros oficiales de exportación de Google Engineering y configuración de grabación de mínima fricción operativa.</p>
+    </div>
+
+    <article class="content-card">
+      <h3>3.1. Especificaciones de exportación recomendadas</h3>
+      <p>Para prevenir artefactos de degradación digital provocados por la transcodificación automática de los servidores de YouTube, configura tu software de edición con estos estándares:</p>
+      <ul>
+        <li><strong>Contenedor:</strong> MP4 estándar (con la marca <code>MOOV atom</code> colocada al inicio del archivo para optimizar el procesamiento y reproducción progresiva).</li>
+        <li><strong>Códec de Vídeo:</strong> H.264 o AV1. Para resoluciones iguales o superiores a <strong>1440p (2K) y 4K</strong>, YouTube asigna automáticamente su códec de alta eficiencia (<strong>VP09 / AV01</strong>), el cual preserva la nitidez del material original con mayor fidelidad frente a vídeos 1080p codificados bajo perfiles básicos (AVC1).</li>
+        <li><strong>Códec de Audio:</strong> AAC-LC estéreo, frecuencia de muestreo fija de <strong>48 kHz</strong> y tasa de bits constante de <strong>384 kbps</strong>.</li>
+      </ul>
+
+      <h3>3.2. Tabla técnica de tasas de bits (Bitrate) y resoluciones estándar</h3>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Resolución</th>
+              <th>Frecuencia estándar (24, 25, 30 fps)</th>
+              <th>Frecuencia alta (48, 50, 60 fps)</th>
+              <th>Espacio de Color / Rango</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1080p (Full HD)</strong></td>
+              <td>8 Mbps (SDR) / 10 Mbps (HDR)</td>
+              <td>12 Mbps (SDR) / 15 Mbps (HDR)</td>
+              <td>Rec. 709 (SDR) / Rec. 2020 (HDR)</td>
+            </tr>
+            <tr>
+              <td><strong>1440p (2K QHD)</strong></td>
+              <td>16 Mbps (SDR) / 20 Mbps (HDR)</td>
+              <td>24 Mbps (SDR) / 30 Mbps (HDR)</td>
+              <td>Rec. 709 (SDR) / Rec. 2020 (HDR)</td>
+            </tr>
+            <tr>
+              <td><strong>2160p (4K UHD)</strong></td>
+              <td>35 – 45 Mbps (SDR) / 44 – 56 Mbps (HDR)</td>
+              <td>53 – 68 Mbps (SDR) / 66 – 85 Mbps (HDR)</td>
+              <td>Rec. 709 (SDR) / Rec. 2020 (HDR)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+
+    <article class="content-card">
+      <h3>3.3. Configuración del entorno de producción inicial: Mínima fricción operativa</h3>
+      <p>Uno de los principales detonantes del abandono en creadores novatos es la sobreingeniería de producción (estudios alquilados, iluminación compleja y guiones palabra por palabra en teleprónter).</p>
+      <ul>
+        <li><strong>Cámara:</strong> Inicie con un dispositivo móvil contemporáneo o cámara compacta (ej. tipo DJI Osmo Pocket).</li>
+        <li><strong>Iluminación:</strong> Emplee iluminación natural situándose frente a una ventana para garantizar difusión suave y sin sombras duras.</li>
+        <li><strong>Prioridad de Audio:</strong> Un micrófono lavalier cableado o inalámbrico de solapa captura una señal limpia y cercana, factor que supera en relevancia técnica a la resolución de imagen.</li>
+        <li><strong>Apoyo Pedagógico sin Teleprónter:</strong> La utilización de diapositivas conceptuales de fondo o esquemas breves de puntos clave (<em>bullets</em>) incrementa la retención visual y previene la lectura rígida y artificial del teleprónter.</li>
+      </ul>
+    </article>
+  </section>
+
+  <!-- ========================================================================
+       PESTAÑA 4: IDENTIDAD Y EMPAQUETADO (MÓDULO 4)
+       ======================================================================== -->
+  <section class="tab-section" id="sec-4" data-t="Identidad Visual, Empaquetado y Psicología">
+    <div class="section-header-banner">
+      <h2>Módulo 4: Identidad Visual, Empaquetado y Psicología del Espectador</h2>
+      <p>Diseño responsive del banner, estructura persuasiva del vídeo de bienvenida e ingeniería de miniaturas y títulos.</p>
+    </div>
+
+    <article class="content-card">
+      <h3>4.1. Diseño del banner (pleca superior)</h3>
+      <p>El banner opera como el escaparate principal de tu marca en YouTube Studio:</p>
+      <ul>
+        <li><strong>Dimensiones estándar recomendadas:</strong> <code>2560 x 1440 píxeles</code>, con un <strong>área segura central de 1232 x 338 píxeles</strong> donde deben ubicarse el logotipo, el texto principal y la propuesta de valor para garantizar legibilidad en móvil, ordenador y TV.</li>
+        <li><strong>Las 3 preguntas obligatorias que debe responder el banner en 3 segundos:</strong>
+          <ol>
+            <li>¿De qué trata este canal?</li>
+            <li>¿Por qué le debe importar al espectador ideal?</li>
+            <li>¿Cuál es el calendario de publicaciones (ej. <em>"Nuevas clases cada martes"</em>)?</li>
+          </ol>
+        </li>
+      </ul>
+    </article>
+
+    <article class="content-card">
+      <h3>4.2. Anatomía del vídeo de bienvenida</h3>
+      <p>El tráiler o vídeo de bienvenida fija la primera impresión de los usuarios no suscritos que visitan la portada del canal:</p>
+      <ol>
+        <li><strong>Gancho (0 – 15s):</strong> Identificación directa del problema urgente del avatar.</li>
+        <li><strong>Autoridad (15 – 45s):</strong> Presentación de antecedentes verificables que justifiquen por qué escuchar al creador.</li>
+        <li><strong>La promesa / El regalo (45 – 90s):</strong> Qué transformaciones o conocimientos concretos obtendrá el espectador si permanece en el canal.</li>
+        <li><strong>Llamado a la acción (CTA) final:</strong> Invitación fundamentada a suscribirse para no perder los módulos secuenciales.</li>
+      </ol>
+      <div class="copy-block">
+        <div class="copy-block-header">
+          <span>Ruta exacta de configuración en YouTube Studio</span>
+          <button type="button" class="btn-copy" data-copy="YouTube Studio > Personalización > Pestaña de inicio > Tráiler del canal para los usuarios que no se han suscrito">📋 Copiar ruta</button>
+        </div>
+        <div class="copy-code-text">YouTube Studio &gt; Personalización &gt; Pestaña de inicio &gt; Tráiler del canal para los usuarios que no se han suscrito</div>
+      </div>
+    </article>
+
+    <article class="content-card">
+      <h3>4.3. Ingeniería del empaquetado: Miniaturas y Títulos</h3>
+      <p>YouTube funciona como una plataforma de decisión visual (<em>click-and-watch</em>). Ningún espectador experimenta la calidad del contenido sin antes validar la promesa del empaquetado:</p>
+      <ul>
+        <li><strong>Miniaturas:</strong> Relación de aspecto <code>16:9</code>, resolución <code>1280 x 720 píxeles</code> (mínimo 640 píxeles de ancho), formato JPG/PNG por debajo de 2 MB. Priorice alto contraste cromático, primeros planos expresivos y un máximo de <strong>3 a 4 palabras clave</strong> que complementen, sin duplicar, el título.</li>
+        <li><strong>Títulos:</strong> Enfoque semántico equilibrado entre intención de búsqueda (SEO) y curiosidad psicológica (apertura de bucles de intriga o <em>curiosity loops</em>).</li>
+      </ul>
+    </article>
+  </section>
+
+  <!-- ========================================================================
+       PESTAÑA 5: SERIES Y SPRINT (MÓDULO 5)
+       ======================================================================== -->
+  <section class="tab-section" id="sec-5" data-t="Estrategia de Contenidos: Series y Sprint Inicial">
+    <div class="section-header-banner">
+      <h2>Módulo 5: Estrategia de Contenidos: Arquitectura de Series y el Sprint Inicial</h2>
+      <p>Cómo multiplicar la profundidad de sesión a 4.6 vídeos por visita y construir volumen sostenible sin agotamiento.</p>
+    </div>
+
+    <article class="content-card">
+      <h3>5.1. El principio de la librería surtida</h3>
+      <p>Lanzar un canal publicando un único vídeo es equivalente a inaugurar una tienda con un solo producto en sus estantes. Si el espectador llega a través de una búsqueda o recomendación y encuentra el canal vacío, la probabilidad de rebote es máxima.</p>
+
+      <h3>5.2. Diseño de series de contenido: La regla de 2 x 3</h3>
+      <p>La estrategia óptima de lanzamiento consiste en publicar o tener programadas al menos <strong>dos series temáticas con un mínimo de tres vídeos correlativos cada una</strong>:</p>
+      <ul>
+        <li><strong>Serie A:</strong> Fundamentos y primeros pasos dentro de la disciplina.</li>
+        <li><strong>Serie B:</strong> Métodos de monetización o actualizaciones avanzadas.</li>
+        <li><strong>Encadenamiento técnico:</strong> Al finalizar el primer episodio, el creador debe invitar explícitamente a continuar con el segundo mediante pantallas finales (<em>end screens</em>) y tarjetas interactivas, alimentando la señal algorítmica de continuidad.</li>
+      </ul>
+
+      <h3>5.3. Métricas de consumo continuo: El multiplicador 4.6x</h3>
+      <p>El diseño de contenidos en series multiplica la profundidad de sesión. En canales optimizados con este marco metodológico, los espectadores consumen un promedio de <strong>4.6 vídeos por visita única</strong> (pudiendo elevarse a 6 o 7 reproducciones acumuladas), convirtiendo el crecimiento lineal en exponencial.</p>
+
+      <h3>5.4. El Sprint inicial de 3 a 6 meses</h3>
+      <p>Durante los primeros meses de vida del canal, el foco debe ser el volumen y la consistencia operativa:</p>
+      <ul>
+        <li>Desarrolle un ritmo sostenible (ej. 1 vídeo semanal o 2 vídeos quincenales según capacidad).</li>
+        <li>Analice el comportamiento de retención de cada entrega para implementar micro-mejoras progresivas (iluminación, audio, ritmo de edición y formulación de introducciones).</li>
+        <li>La constancia acumulada mitiga la ansiedad por la viralidad inmediata y previene el <em>burnout</em>.</li>
+      </ul>
+    </article>
+  </section>
+
+  <!-- ========================================================================
+       PESTAÑA 6: ALGORITMO Y ANALÍTICA (MÓDULO 6)
+       ======================================================================== -->
+  <section class="tab-section" id="sec-6" data-t="Ingeniería de Algoritmos y Analítica Cuantitativa">
+    <div class="section-header-banner">
+      <h2>Módulo 6: Ingeniería de Algoritmos y Analítica de Datos Cuantitativa</h2>
+      <p>Funcionamiento real de las redes neuronales de Google Research, métricas críticas de retención y gestión de tráfico pagado.</p>
+    </div>
+
+    <article class="content-card">
+      <h3>6.1. La canalización neuronal de recomendación (Google Research)</h3>
+      <p>El sistema industrial de recomendaciones de YouTube no opera como una entidad mística, sino como una arquitectura neuronal profunda de dos etapas:</p>
+      <ol>
+        <li><strong>Generación de candidatos (Candidate Generation):</strong> Filtra el catálogo masivo de miles de millones de vídeos a un conjunto reducido de unos pocos cientos de opciones candidatas para un usuario específico, evaluando su historial de reproducciones y afinidad contextual.</li>
+        <li><strong>Clasificación (Ranking / Scoring):</strong> Asigna una puntuación predictiva a cada vídeo candidato utilizando redes neuronales profundas basadas en cientos de atributos (características del vídeo, historial de impresiones previas, señales de satisfacción y dispositivo). El vídeo con mayor puntuación esperada se sitúa en la posición superior de la página principal o de la barra de recomendaciones.</li>
+      </ol>
+    </article>
+
+    <article class="content-card">
+      <h3>6.2. Decodificación de Impresiones técnicas y Tasa de Clics (CTR)</h3>
+      <ul>
+        <li><strong>Definición técnica de Impresión:</strong> Una miniatura computa como impresión válida únicamente cuando se muestra al menos al <strong>50% de su superficie</strong> en la pantalla del usuario durante un mínimo ininterrumpido de <strong>1 segundo</strong>.</li>
+        <li><strong>Tasa de Clics (CTR):</strong> Porcentaje de impresiones que se transforman en visualizaciones efectivas. Un CTR alto aislado no basta si no va acompañado de una sólida retención.</li>
+      </ul>
+
+      <h3>6.3. Métricas de Reproducción: AVD y APVD</h3>
+      <ul>
+        <li><strong>Duración Media de Reproducción (AVD):</strong> Minutos u horas promedio que los espectadores permanecen en el vídeo.</li>
+        <li><strong>Porcentaje Medio Reproducido (APVD):</strong> Fracción porcentual del metraje total consumido. En vídeos largos, el tiempo total acumulado (<em>watch time</em>) suele tener un peso superior al porcentaje relativo.</li>
+      </ul>
+
+      <h3>6.4. Señales de satisfacción directa e implícita (Valued Watchtime)</h3>
+      <p>YouTube modula sus modelos no solo por los clics, sino por el valor real percibido por la persona. Emplea encuestas automáticas de satisfacción de 1 a 5 estrellas al terminar la reproducción, así como el análisis de retroalimentación implícita (compartir contenido, comentarios constructivos y ausencia de abandonos precipitados).</p>
+    </article>
+
+    <article class="content-card">
+      <h3>6.5. El rol de la Inteligencia Artificial nativa de YouTube</h3>
+      <p>Las funciones asistidas por IA dentro de YouTube Studio (generación de ideas, asistencia de miniaturas y métricas de oportunidad) <strong>requieren datos de entrenamiento previos</strong>. Si el canal carece de un volumen consistente de publicaciones y de un nicho vertical delimitado, las sugerencias algorítmicas carecerán de precisión diagnóstica.</p>
+
+      <h3>6.6. Tráfico orgánico vs. Publicidad pagada (Google Ads)</h3>
+      <div class="callout-box warning">
+        <strong>Advertencia sobre mezcla de tráfico:</strong> No inyecte tráfico de pago en vídeos orgánicos que estén recibiendo tracción algorítmica espontánea; la evidencia de campo y estudios técnicos documentan que la mezcla de tráfico de anuncios en el mismo activo tiende a frenar la distribución orgánica natural. Active campañas de Google Ads únicamente cuando el canal posea un embudo de conversión validado, identidad consolidada y un catálogo de series que permita retener el tráfico captado.
+      </div>
+    </article>
+  </section>
+
+  <!-- ========================================================================
+       PESTAÑA 7: 10 CASOS PRÁCTICOS (MÓDULO 7)
+       ======================================================================== -->
+  <section class="tab-section" id="sec-7" data-t="10 Casos Prácticos de Aplicación">
+    <div class="section-header-banner">
+      <h2>Módulo 7: 10 Casos Prácticos de Aplicación</h2>
+      <p>Escenarios reales de implementación técnica, optimización de métricas y gobernanza operativa.</p>
+    </div>
+
+    <div class="content-card">
+      <h3>1. Blindaje de Canal Corporativo</h3>
+      <p>Creación de correo en Google Workspace reservado exclusivamente para la administración del canal, con llaves FIDO físicas asignadas al director de operaciones y acceso de <strong>Editor Limitado</strong> para la agencia de marketing.</p>
+    </div>
+
+    <div class="content-card">
+      <h3>2. Definición de Subnicho Vertical</h3>
+      <p>Transición de un canal genérico de "Cocina" hacia <em>"Repostería sin azúcar ni gluten para personas con diabetes tipo 2"</em>, elevando el CTR de búsqueda en un 300% gracias a la hiper-relevancia del avatar.</p>
+    </div>
+
+    <div class="content-card">
+      <h3>3. Optimización de Exportación en Premiere Pro</h3>
+      <p>Configuración de render en MP4 a <strong>1440p (2560x1440) a 24 Mbps</strong> con audio AAC 48 kHz para forzar el transcodificador <strong>VP09 / AV01</strong> de YouTube aun grabando en fuente nativa 1080p.</p>
+    </div>
+
+    <div class="content-card">
+      <h3>4. Diseño de Banner Multisoporte</h3>
+      <p>Diagramación en software gráfico con área segura central de <code>1232 x 338 px</code>, contrastada en simuladores de pantalla de TV (4K), monitor de escritorio y pantalla de smartphone compacto.</p>
+    </div>
+
+    <div class="content-card">
+      <h3>5. Vídeo de Bienvenida con Estructura de 4 Fases</h3>
+      <p>Presentación de 75 segundos donde se expone el problema del programador novato, credenciales laborales de 10 años, promesa del temario anual y llamada clara a la suscripción.</p>
+    </div>
+
+    <div class="content-card">
+      <h3>6. Encadenamiento de Serie Temática</h3>
+      <p>Publicación simultánea de los episodios <em>"1: Fundamentos de Git"</em>, <em>"2: Ramas y Fusiones"</em> y <em>"3: Resolución de Conflictos"</em>, vinculados mediante pantallas finales personalizadas para impulsar la sesión continua.</p>
+    </div>
+
+    <div class="content-card">
+      <h3>7. Corrección de Cuello de Botella en Introducciones</h3>
+      <p>Reducción de la cabecera animada inicial de 12 segundos a un gancho verbal directo de 4 segundos, mitigando la caída de retención en el primer minuto del 45% al 18%.</p>
+    </div>
+
+    <div class="content-card">
+      <h3>8. Asignación Temporal de Permisos</h3>
+      <p>Otorgamiento del rol de Editor a un auditor analítico externo durante 48 horas y revocación inmediata al término de la consultoría.</p>
+    </div>
+
+    <div class="content-card">
+      <h3>9. Empaquetado de Curiosidad Controlada</h3>
+      <p>Sustitución de miniatura con texto plano redundante por una miniatura con primer plano de herramienta rota y título complementario enfocado en el síntoma de error.</p>
+    </div>
+
+    <div class="content-card">
+      <h3>10. Planificación de Sprint de Lanzamiento</h3>
+      <p>Elaboración de un calendario de producción anticipada de 12 guiones esquemáticos grabados en dos fines de semana mediante <em>batching</em> para asegurar 3 meses de publicación ininterrumpida.</p>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       PESTAÑA 8: BUENAS PRÁCTICAS (MÓDULO 8)
+       ======================================================================== -->
+  <section class="tab-section" id="sec-8" data-t="Matriz de Buenas Prácticas Operativas">
+    <div class="section-header-banner">
+      <h2>Módulo 8: Matriz de Buenas Prácticas Operativas</h2>
+      <p>Estándares profesionales de trabajo y lista de verificación interactiva con guardado automático.</p>
+    </div>
+
+    <article class="content-card">
+      <h3>Protocolos de Excelencia Operativa</h3>
+      <ul>
+        <li><strong>Ciberseguridad:</strong> Auditoría mensual de dispositivos conectados y llaves de acceso activas en la cuenta Google raíz.</li>
+        <li><strong>Contenido:</strong> Diseñar el empaquetado (título y miniatura conceptual) <strong>antes</strong> de comenzar el rodaje o la redacción del guion.</li>
+        <li><strong>Formatos:</strong> Mantener consistencia estilística y tipográfica en todas las miniaturas de una misma serie para potenciar el reconocimiento inmediato de marca.</li>
+        <li><strong>Producción:</strong> Grabar en bloques de tiempo (<em>batching</em>) para reducir los costos de preparación técnica y montaje de iluminación.</li>
+        <li><strong>Interacción:</strong> Responder sistemáticamente a todos los comentarios cualitativos durante las primeras 3 horas posteriores a la publicación para estimular la interacción inicial.</li>
+      </ul>
+    </article>
+
+    <article class="content-card">
+      <h3>✅ Checklist Interactivo de Pre-Publicación (Guardado en tu navegador)</h3>
+      <p>Marca cada punto antes de publicar un nuevo episodio en tu canal:</p>
+      <div id="checklist-container">
+        <label class="checklist-row">
+          <input type="checkbox" data-check-id="chk-1">
+          <span><strong>1. Empaquetado previo:</strong> Título semántico y miniatura de alto contraste (máx. 4 palabras) validados antes de grabar.</span>
+        </label>
+        <label class="checklist-row">
+          <input type="checkbox" data-check-id="chk-2">
+          <span><strong>2. Audio limpio 48 kHz:</strong> Pista vocal grabada con micrófono cercano y exportada en AAC-LC a 384 kbps.</span>
+        </label>
+        <label class="checklist-row">
+          <input type="checkbox" data-check-id="chk-3">
+          <span><strong>3. Renderizado 1440p/4K:</strong> Exportación en MP4 con MOOV atom inicial para activar códec VP09/AV01.</span>
+        </label>
+        <label class="checklist-row">
+          <input type="checkbox" data-check-id="chk-4">
+          <span><strong>4. Gancho sin relleno:</strong> Eliminadas las cabeceras largas; promesa del título abordada en los primeros 5 segundos.</span>
+        </label>
+        <label class="checklist-row">
+          <input type="checkbox" data-check-id="chk-5">
+          <span><strong>5. Encadenamiento de serie:</strong> Pantalla final configurada apuntando al siguiente episodio y a la lista de reproducción.</span>
+        </label>
+        <label class="checklist-row">
+          <input type="checkbox" data-check-id="chk-6">
+          <span><strong>6. Seguridad y roles:</strong> Acceso de colaboradores limitado estrictamente al rol necesario sin compartir correo raíz.</span>
+        </label>
+      </div>
+    </article>
+  </section>
+
+  <!-- ========================================================================
+       PESTAÑA 9: 10 PROYECTOS (MÓDULO 10 DEL MANUAL)
+       ======================================================================== -->
+  <section class="tab-section" id="sec-9" data-t="10 Proyectos Integradores Paso a Paso">
+    <div class="section-header-banner">
+      <h2>Módulo 10: 10 Proyectos Integradores Paso a Paso</h2>
+      <p>Hoja de ruta práctica de ejecución desde la fortificación de seguridad hasta el encadenamiento de consumo continuo.</p>
+    </div>
+
+    <div class="content-card">
+      <h3>Proyecto 1: Auditoría y Fortificación de Seguridad Digital</h3>
+      <p><strong>Objetivo:</strong> Blindar la cuenta raíz y configurar permisos seguros.</p>
+      <p><strong>Procedimiento:</strong> Crear cuenta de Google dedicada, activar 2SV, enrolar Passkey FIDO y verificar en YouTube Studio que no existan permisos heredados.</p>
+    </div>
+
+    <div class="content-card">
+      <h3>Proyecto 2: Construcción del Dossier del Avatar y Matriz de Monetización</h3>
+      <p><strong>Objetivo:</strong> Establecer las bases estratégicas del canal.</p>
+      <p><strong>Procedimiento:</strong> Redactar una ficha técnica detallada del cliente ideal, definir los canales de ingreso previstos (cursos, servicios, AdSense) y calcular los volúmenes de audiencia necesarios.</p>
+    </div>
+
+    <div class="content-card">
+      <h3>Proyecto 3: Diseño de Escaparate Visual Multisoporte (Banner y Avatar)</h3>
+      <p><strong>Objetivo:</strong> Configurar la identidad estética de YouTube Studio.</p>
+      <p><strong>Procedimiento:</strong> Diseñar en software gráfico el banner de <code>2560 x 1440 px</code> con área segura central de <code>1232 x 338 px</code>, verificar legibilidad en todos los dispositivos y publicarlo en <em>Personalización</em>.</p>
+    </div>
+
+    <div class="content-card">
+      <h3>Proyecto 4: Grabación y Despliegue del Vídeo de Bienvenida</h3>
+      <p><strong>Objetivo:</strong> Crear el tráiler de inducción para visitantes nuevos.</p>
+      <p><strong>Procedimiento:</strong> Guionizar bajo la fórmula <em>Gancho – Autoridad – Promesa – CTA</em>, grabar en entorno de mínima fricción, subir y fijar en la pestaña principal de inicio.</p>
+    </div>
+
+    <div class="content-card">
+      <h3>Proyecto 5: Estructuración y Rodaje de la Serie Inicial A (3 Episodios)</h3>
+      <p><strong>Objetivo:</strong> Romper la barrera del canal vacío.</p>
+      <p><strong>Procedimiento:</strong> Diseñar un itinerario pedagógico modular de tres partes, grabar con apoyo de diapositivas conceptuales y generar ganchos de derivación entre vídeos.</p>
+    </div>
+
+    <div class="content-card">
+      <h3>Proyecto 6: Estructuración y Rodaje de la Serie Secundaria B (3 Episodios)</h3>
+      <p><strong>Objetivo:</strong> Diversificar la oferta temática y generar navegación cruzada.</p>
+      <p><strong>Procedimiento:</strong> Desarrollar una serie complementaria orientada a herramientas o análisis de mercado, vinculando los contenidos mediante listas de reproducción optimizadas.</p>
+    </div>
+
+    <div class="content-card">
+      <h3>Proyecto 7: Laboratorio de Codificación y Calibración de Transcodificadores</h3>
+      <p><strong>Objetivo:</strong> Dominar las especificaciones de entrega audiovisual de Google.</p>
+      <p><strong>Procedimiento:</strong> Realizar pruebas de renderizado en 1080p vs 1440p en Premiere Pro / DaVinci Resolve, subir en modo oculto y verificar con <em>"Estadísticas para nerds"</em> la asignación del códec VP09/AV01.</p>
+    </div>
+
+    <div class="content-card">
+      <h3>Proyecto 8: Planificación y Ejecución de un Sprint de Contenido de 90 Días</h3>
+      <p><strong>Objetivo:</strong> Acumular volumen para activar la IA y estabilizar el ritmo productivo.</p>
+      <p><strong>Procedimiento:</strong> Programar un calendario quincenal estricto durante 3 meses, evaluando tiempos de grabación y optimizando la resistencia física y mental del creador.</p>
+    </div>
+
+    <div class="content-card">
+      <h3>Proyecto 9: Auditoría Analítica de Retención y Curvas de Comportamiento</h3>
+      <p><strong>Objetivo:</strong> Aprender a interpretar datos cuantitativos en YouTube Analytics.</p>
+      <p><strong>Procedimiento:</strong> Evaluar la gráfica de retención de los primeros 6 vídeos, clasificar las caídas abruptas y redactar un informe de mejoras para las siguientes introducciones.</p>
+    </div>
+
+    <div class="content-card">
+      <h3>Proyecto 10: Integración de Pantallas Finales y Rutas de Consumo Continuo</h3>
+      <p><strong>Objetivo:</strong> Elevar el promedio de vídeos consumidos por sesión.</p>
+      <p><strong>Procedimiento:</strong> Configurar en todos los vídeos subidos plantillas de pantallas finales con enlaces dinámicos al <em>"Mejor vídeo para el usuario"</em> y a la lista de reproducción de la serie correspondiente.</p>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       PESTAÑA 10: 33 PREGUNTAS (Q&A) — ANTES DE ERRORES, PLEGADAS POR DEFECTO
+       ======================================================================== -->
+  <section class="tab-section" id="sec-10" data-t="33 Preguntas (Q&A) por Nivel de Dificultad">
+    <div class="section-header-banner">
+      <h2>Banco de Evaluación: 33 Preguntas y Respuestas (Q&A)</h2>
+      <p>Organizadas progresivamente en Nivel 1 (Básico), Nivel 2 (Avanzado) y Nivel 3 (PRO). Pulsa sobre cada pregunta o usa los controles globales.</p>
+    </div>
+
+    <div class="qa-toolbar">
+      <button type="button" class="btn-primary" id="btn-expand-all-qa">+ Desplegar todas respuestas</button>
+      <button type="button" class="btn-secondary" id="btn-collapse-all-qa">- Plegar todas las respuestas</button>
+    </div>
+
+    <!-- NIVEL 1: BÁSICO (1 a 11) -->
+    <div class="content-card">
+      <h3>🟢 Nivel 1 — Fundamentos y Operación Básica (Preguntas 1 a 11)</h3>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>1. ¿Quién es el dueño legal de un canal de YouTube?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">El titular de la cuenta de correo de Google con la cual se registró originariamente el canal.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>2. ¿Es recomendable usar mi correo personal para crear el canal de mi negocio?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">No; debe crearse un correo exclusivo e independiente para evitar pérdidas patrimoniales y aislar riesgos de ciberseguridad.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>3. ¿Qué sucede si un socio tiene el correo raíz y nos separamos?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">El socio conservará el control técnico y la propiedad total del canal en los sistemas de Google.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>4. ¿Qué es una Passkey o llave de acceso?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">Un método de autenticación criptográfica biométrica que reemplaza a las contraseñas tradicionales protegiendo contra robos de sesión.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>5. ¿Qué rol de YouTube Studio debo asignar a mi editor de vídeo?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">Editor limitado, para que pueda gestionar metadatos y vídeos sin ver los ingresos del canal.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>6. ¿El rol de Administrador puede borrar el canal?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">No; la facultad de borrado total está reservada exclusivamente al Propietario.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>7. ¿Qué es el área segura del banner de YouTube?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">La zona central de 1232 x 338 píxeles visible de forma nítida y completa en todos los dispositivos (móviles, tabletas, ordenadores y televisores).</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>8. ¿Qué es un llamado a la acción (CTA)?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">Una instrucción verbal o gráfica clara que indica al espectador qué acción concreta realizar a continuación (ej. suscribirse o descargar un recurso).</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>9. ¿Por qué no es recomendable lanzar un canal con un solo vídeo?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">Porque se asemeja a una tienda sin mercancía; el espectador no tiene opciones para continuar consumiendo contenido y abandona el canal.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>10. ¿Qué es una impresión en YouTube?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">El evento registrado cuando al menos el 50% de la miniatura es visible en la pantalla del usuario durante un mínimo de 1 segundo.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>11. ¿Cuántas faltas a los lineamientos provocan el cierre del canal?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">Tres faltas (<em>strikes</em>) activas dentro de un período móvil de 90 días conllevan el cierre irreversible de la cuenta.</div>
+      </div>
+    </div>
+
+    <!-- NIVEL 2: AVANZADO (12 a 22) -->
+    <div class="content-card">
+      <h3>🟡 Nivel 2 — Estrategia, Producción y Optimización Avanzada (Preguntas 12 a 22)</h3>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>12. ¿Cómo influye la arquitectura de series en el crecimiento exponencial?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">Permite retener al usuario en sesiones continuas de consumo, elevando el promedio de vídeos vistos por visita a 4.6 o más.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>13. ¿Cuál es la función del vídeo de bienvenida en la pestaña de inicio?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">Exponer el gancho, cimentar autoridad profesional, entregar la propuesta de valor y solicitar la suscripción de usuarios nuevos.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>14. ¿Por qué no se aconseja utilizar teleprónter al iniciar un canal?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">Tiende a inhibir al creador novel, resta naturalidad al mensaje, dilata los tiempos de producción y reduce la conexión emocional.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>15. ¿Qué ventajas presenta el apoyo con diapositivas frente a hablar de memoria?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">Facilita el ritmo didáctico, evita olvidos estructurales, incrementa la retención visual y prescinde de lecturas rígidas.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>16. ¿Qué es el tiempo de visualización valorado (valued watchtime)?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">Es una métrica interna algorítmica de satisfacción que combina horas de reproducción efectiva con encuestas directas de satisfacción.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>17. ¿En qué consiste el sistema Content ID?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">En una base de datos automatizada de huellas digitales de audio y vídeo que coteja subidas para identificar y reclamar derechos de autor.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>18. ¿Citar al autor exime de una infracción por derechos de autor?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">No; la atribución no neutraliza una infracción ni constituye automáticamente Uso Legítimo (<em>Fair Use</em>).</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>19. ¿Qué códec de compresión asigna YouTube a resoluciones de 1440p o superiores?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">Asigna códecs avanzados como VP09 o AV01, preservando una mayor tasa de datos y nitidez frente al códec AVC1.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>20. ¿Cuál es la frecuencia de muestreo de audio recomendada oficialmente por Google?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">Audio estéreo codificado en AAC-LC a una frecuencia fija de 48 kHz.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>21. ¿Qué tasa de bits estándar se sugiere para vídeos 1080p a 24-30 fps en SDR?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">Una tasa de transferencia de datos de 8 Mbps.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>22. ¿Por qué un canal debe mantener coherencia en su nicho vertical?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">Para que el sistema de recomendación identifique patrones claros de audiencia; variar de temática degrada la retención y dispersa al avatar.</div>
+      </div>
+    </div>
+
+    <!-- NIVEL 3: PRO (23 a 33) -->
+    <div class="content-card">
+      <h3>🔴 Nivel 3 — Ingeniería Profunda y Arquitectura PRO (Preguntas 23 a 33)</h3>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>23. ¿Cómo opera la etapa de 'Candidate Generation' en el algoritmo de recomendación?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">Criba millones de vídeos a un subconjunto de unos pocos cientos basándose en el historial del usuario y patrones colaborativos.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>24. ¿Qué variables analiza la etapa de 'Ranking / Scoring' en la red neuronal de YouTube?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">Modela cientos de características dinámicas del vídeo y del contexto del usuario para predecir el tiempo de reproducción valorado y probabilidad de clic.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>25. ¿Qué requerimiento previo exige la IA nativa de YouTube para generar sugerencias útiles?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">Requiere un volumen considerable de contenido acumulado (<em>sprint</em> previo) y una estricta coherencia temática de nicho.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>26. ¿Por qué inyectar publicidad de Google Ads en un vídeo orgánico en auge puede perjudicar su distribución?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">Porque el tráfico heterogéneo de pago diluye las señales de retención orgánica, induciendo al algoritmo a frenar su distribución natural.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>27. ¿Qué es el robo de sesión por cookies ('session hijacking') y cómo se previene?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">La sustracción de identificadores de sesión activa mediante malware; se mitiga con Passkeys FIDO y evitando ejecutar archivos de remitentes no verificados.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>28. ¿Cuáles son los 4 factores que evalúan los tribunales para determinar el Fair Use?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">1) Propósito y carácter transformativo del uso, 2) Naturaleza de la obra original, 3) Cantidad y sustancialidad utilizada, y 4) Efecto en el mercado potencial.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>29. ¿Cuál es el valor estratégico del MOOV atom al exportar vídeos para plataformas web?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">Situar el índice MOOV atom al comienzo del archivo MP4 permite a los servidores iniciar la reproducción y el procesamiento sin esperar la descarga íntegra del archivo.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>30. ¿Qué representa la distribución por ley de potencia demostrada por Pew Research Center en YouTube?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">Que una minoría reducida de canales captura la vasta mayoría de las reproducciones totales del ecosistema, exigiendo profesionalización y paciencia estratégica.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>31. ¿Cómo influye el espacio de color Rec. 709 frente a Rec. 2020 en el pipeline de transcodificación?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">Rec. 709 delimita el rango dinámico estándar (SDR), mientras que Rec. 2020 gestiona metadatos HDR; exportar incorrectamente genera tonos lavados en la plataforma.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>32. ¿Qué rol juega el Burnout en la curva de abandono de creadores y cómo se contrarresta?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">Provocado por sistemas de edición y calendarios insostenibles; se combate mediante formatos de mínima fricción operativa y grabación por lotes.</div>
+      </div>
+
+      <div class="qa-item">
+        <button type="button" class="qa-question-btn" aria-expanded="false">
+          <span>33. ¿Cómo se articula un modelo de negocio de YouTube basado en servicios frente a AdSense?</span>
+          <span class="qa-toggle-icon">+</span>
+        </button>
+        <div class="qa-answer-panel">Se optimiza el contenido hacia la adquisición de clientes cualificados de alto valor (<em>leads</em>), donde pocas visualizaciones específicas bastan para lograr una alta rentabilidad económica.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       PESTAÑA 11: ERRORES (MÓDULO 9 DEL MANUAL — SOLUCIÓN DE PROBLEMAS TÉCNICOS)
+       ======================================================================== -->
+  <section class="tab-section" id="sec-11" data-t="Errores Comunes y Protocolo de Diagnóstico Técnico">
+    <div class="section-header-banner">
+      <h2>Módulo 9: Protocolo de Diagnóstico y Solución de Problemas Técnicos (Errores)</h2>
+      <p>Matriz de contingencia ante fallos de renderizado, caídas de retención, reclamos de Content ID y bajo CTR.</p>
+    </div>
+
+    <article class="content-card">
+      <h3>Matriz de Incidencias Técnicas y Procedimientos de Resolución</h3>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Incidencia Técnica</th>
+              <th>Causa Raíz Probable</th>
+              <th>Procedimiento de Resolución</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Procesamiento de vídeo detenido en 99%</strong></td>
+              <td>Error de transcodificación de fotogramas corruptos o códec no estándar.</td>
+              <td>Cancelar subida, renderizar en contenedor MP4 estándar con perfil H.264 básico a 48 kHz de audio y volver a subir.</td>
+            </tr>
+            <tr>
+              <td><strong>Pérdida de nitidez severa en subida a 1080p</strong></td>
+              <td>Aplicación del códec básico AVC1 en resoluciones estándar.</td>
+              <td>Reescalar y exportar el proyecto a 1440p (2K) antes de subir para forzar la asignación de transcodificación VP09/AV01.</td>
+            </tr>
+            <tr>
+              <td><strong>Caída abrupta del 50% de retención en el segundo 15</strong></td>
+              <td>Introducción irrelevante, saludo corporativo prolongado o cabecera visual obsoleta.</td>
+              <td>Eliminar cabeceras introductorias; iniciar de inmediato abordando la promesa del título en los primeros 5 segundos.</td>
+            </tr>
+            <tr>
+              <td><strong>Reclamación automática de Content ID por audio</strong></td>
+              <td>Inclusión de música de fondo sin licencia comercial explícita.</td>
+              <td>Utilizar la herramienta de recorte o reemplazo de pista de audio nativa dentro de YouTube Studio para eliminar el reclamo sin borrar el vídeo.</td>
+            </tr>
+            <tr>
+              <td><strong>CTR inferior al 2% en impresiones iniciales</strong></td>
+              <td>Miniatura con texto ilegible en dispositivos móviles o título sin gancho de interés.</td>
+              <td>Modificar de inmediato la miniatura aumentando el contraste cromático y reescribir el título aplicando enfoque de curiosidad/beneficio.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+  </section>
+
+  <!-- ========================================================================
+       PESTAÑA 12: PROMPTS (MÓDULO 12 DEL MANUAL — REGISTRO DE PROMPTS E IA)
+       ======================================================================== -->
+  <section class="tab-section" id="sec-12" data-t="Prompts e Inteligencia Artificial en el Ecosistema">
+    <div class="section-header-banner">
+      <h2>Módulo 12: Registro de Prompts e Inteligencia Artificial en el Ecosistema</h2>
+      <p>Rigor documental sobre prompts textuales y requisitos de activación de la IA nativa de YouTube Studio.</p>
+    </div>
+
+    <article class="content-card">
+      <h3>Declaración de Rigor Técnico sobre Prompts</h3>
+      <div class="callout-box info">
+        <p>En las fuentes primarias documentadas en la investigación (incluyendo la transcripción de la masterclass de Eloisa Wolf y la bibliografía técnica oficial de Google / YouTube Engineering), <strong>no se menciona ningún prompt textual ni plantillas de instrucciones para modelos de IA generativa externa</strong>.</p>
+        <p style="margin-bottom:0;">Por rigor metodológico, no se han inventado ni interpolado prompts ficticios ajenos a la documentación original.</p>
+      </div>
+
+      <h3>Uso de Inteligencia Artificial en YouTube y Metodología Sustitutiva</h3>
+      <p>Las fuentes delimitan con precisión los alcances de la Inteligencia Artificial dentro de la plataforma y dónde se emplea cada recurso:</p>
+      <ol>
+        <li><strong>Inteligencia Artificial Nativa de YouTube Studio (Dónde se emplea: Panel de Investigación y Creación de YouTube Studio):</strong> YouTube cuenta con modelos algorítmicos integrados para la generación de ideas de contenido, diseño asistido de miniaturas y analítica predictiva de oportunidades de nicho.</li>
+        <li><strong>Requisitos de Activación de la IA (Dónde se emplea: Planificación del Sprint Inicial):</strong> Las fuentes enfatizan que la IA interna solo es precisa y efectiva si el canal cumple dos condiciones insalvables:
+          <ul>
+            <li><em>Volumen de contenido suficiente:</em> Proporcionado a través de un <em>sprint</em> inicial consistente (3 a 6 meses).</li>
+            <li><em>Verticalidad estricta:</em> Un nicho perfectamente delimitado sin dispersión temática. Sin estos dos factores, los datos son insuficientes y la IA genera recomendaciones descontextualizadas.</li>
+          </ul>
+        </li>
+        <li><strong>Estructura de Guiones y Producción (Dónde se emplea: Grabación y Rodaje de Episodios):</strong> En sustitución del uso de prompts rígidos o teleprónteres, las fuentes recomiendan una metodología basada en diapositivas visuales de fondo (<em>slides</em>) o esquemas sintéticos de puntos clave (<em>bullets</em>) para asegurar la retención y la autenticidad pedagógica.</li>
+      </ol>
+
+      <div class="copy-block">
+        <div class="copy-block-header">
+          <span>Esquema Operativo Sustitutivo Documentado (Fórmula de Vídeo de Bienvenida y Episodios)</span>
+          <button type="button" class="btn-copy" data-copy="1. GANCHO (0-15s): Identificación directa del problema del avatar.
+2. AUTORIDAD (15-45s): Presentación de antecedentes verificables.
+3. PROMESA / REGALO (45-90s): Transformaciones concretas que obtendrá el espectador.
+4. CTA FINAL: Invitación fundamentada a suscribirse para seguir la serie.">📋 Copiar esquema</button>
+        </div>
+        <div class="copy-code-text">1. GANCHO (0-15s): Identificación directa del problema del avatar.
+2. AUTORIDAD (15-45s): Presentación de antecedentes verificables.
+3. PROMESA / REGALO (45-90s): Transformaciones concretas que obtendrá el espectador.
+4. CTA FINAL: Invitación fundamentada a suscribirse para seguir la serie.</div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ========================================================================
+       PESTAÑA 13: GLOSARIO (MÓDULO 13 DEL MANUAL)
+       ======================================================================== -->
+  <section class="tab-section" id="sec-13" data-t="Glosario Técnico Exhaustivo">
+    <div class="section-header-banner">
+      <h2>Módulo 13: Glosario Técnico Exhaustivo</h2>
+      <p>Definiciones precisas de ingeniería audiovisual, analítica de datos y marco regulatorio de YouTube.</p>
+    </div>
+
+    <div class="content-card">
+      <ul>
+        <li><strong>AVD (Average View Duration):</strong> Duración media de reproducción expresada en unidades de tiempo (minutos y segundos).</li>
+        <li><strong>APVD (Average Percentage Viewed):</strong> Porcentaje promedio consumido de la duración total de un vídeo.</li>
+        <li><strong>Bitrate:</strong> Tasa de transferencia de datos procesada por segundo en una señal audiovisual, expresada comúnmente en Megabits por segundo (Mbps).</li>
+        <li><strong>Burnout:</strong> Estado de agotamiento físico y mental derivado del sobreesfuerzo operativo continuo y sistemas de producción insostenibles.</li>
+        <li><strong>Candidate Generation:</strong> Primera etapa neuronal del sistema de recomendación de YouTube que reduce miles de millones de vídeos a cientos de candidatos.</li>
+        <li><strong>Content ID:</strong> Sistema automatizado de huellas digitales de Google para la gestión e identificación de derechos de propiedad intelectual.</li>
+        <li><strong>CTR (Click-Through Rate):</strong> Tasa de clics; relación porcentual entre las impresiones válidas registradas y las visualizaciones totales.</li>
+        <li><strong>Fair Use:</strong> Doctrina del derecho anglosajón que ampara el uso transformativo sin autorización de obras protegidas bajo ciertas condiciones.</li>
+        <li><strong>FIDO / Passkeys:</strong> Estándar de autenticación criptográfica biométrica inmune a los métodos clásicos de interceptación de credenciales.</li>
+        <li><strong>Impresión:</strong> Muestra de una miniatura donde al menos el 50% de la imagen es visible en pantalla durante al menos 1 segundo continuo.</li>
+        <li><strong>Ranking / Scoring:</strong> Segunda etapa neuronal del sistema de recomendación que ordena los vídeos candidatos mediante redes neuronales profundas.</li>
+        <li><strong>Sprint de Contenido:</strong> Fase intensiva inicial de 3 a 6 meses de publicación constante para dotar al canal de datos y catálogo.</li>
+        <li><strong>Valued Watchtime:</strong> Tiempo de visualización cualificado que evalúa la satisfacción real del usuario más allá de la duración pasiva.</li>
+        <li><strong>YPP (YouTube Partner Program):</strong> Marco institucional y comercial de Google que habilita la monetización de contenidos a creadores elegibles.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       PESTAÑA 14: FUENTES (MÓDULO 14 DEL MANUAL — CON BOTÓN ABRIR EN NUEVA VENTANA)
+       ======================================================================== -->
+  <section class="tab-section" id="sec-14" data-t="Directorio de Fuentes Oficiales y Recursos">
+    <div class="section-header-banner">
+      <h2>Módulo 14: Directorio de Fuentes Oficiales y Recursos Técnicos</h2>
+      <p>Bibliografía primaria, publicaciones científicas de Google Research y guías oficiales verificadas.</p>
+    </div>
+
+    <div id="sources-list-container">
+      <div class="content-card">
+        <h3>1. Fuente Audiovisual Primaria</h3>
+        <p><strong>Título:</strong> Cómo crear un canal de YouTube en 2027 — <strong>Autoría:</strong> Eloisa Wolf (exmiembro de Google y YouTube)</p>
+        <div class="copy-block"><div class="copy-code-text">https://youtube.com/watch?v=mm0Q-2ZyuVI&is=msWDlz0y8kaJ7B9K</div></div>
+        <div class="url-card-actions">
+          <a href="https://youtube.com/watch?v=mm0Q-2ZyuVI&is=msWDlz0y8kaJ7B9K" target="_blank" rel="noopener noreferrer" class="btn-open-url">↗ Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy="https://youtube.com/watch?v=mm0Q-2ZyuVI&is=msWDlz0y8kaJ7B9K">📋 Copiar URL</button>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <h3>2. Gestión de Permisos de Canal, Cuentas de Marca y Seguridad de Accesos</h3>
+        <p><strong>Organización:</strong> Google Account Security / YouTube Help</p>
+        <div class="copy-block"><div class="copy-code-text">https://support.google.com/youtube/answer/9481328</div></div>
+        <div class="url-card-actions">
+          <a href="https://support.google.com/youtube/answer/9481328" target="_blank" rel="noopener noreferrer" class="btn-open-url">↗ Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy="https://support.google.com/youtube/answer/9481328">📋 Copiar URL</button>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <h3>3. Lineamientos de la Comunidad de YouTube y Políticas de Monetización de YPP</h3>
+        <p><strong>Organización:</strong> YouTube Legal & Trust and Safety / Google LLC</p>
+        <div class="copy-block"><div class="copy-code-text">https://support.google.com/youtube/answer/9288567</div></div>
+        <div class="url-card-actions">
+          <a href="https://support.google.com/youtube/answer/9288567" target="_blank" rel="noopener noreferrer" class="btn-open-url">↗ Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy="https://support.google.com/youtube/answer/9288567">📋 Copiar URL</button>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <h3>4. Uso Legítimo (Fair Use) y Sistema Content ID</h3>
+        <p><strong>Organización:</strong> Equipo Legal de YouTube & U.S. Copyright Office</p>
+        <div class="copy-block"><div class="copy-code-text">https://support.google.com/youtube/answer/9783148</div></div>
+        <div class="url-card-actions">
+          <a href="https://support.google.com/youtube/answer/9783148" target="_blank" rel="noopener noreferrer" class="btn-open-url">↗ Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy="https://support.google.com/youtube/answer/9783148">📋 Copiar URL</button>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <h3>5. YouTube for Creators: Primeros Pasos y Arquitectura del Ecosistema</h3>
+        <p><strong>Organización:</strong> YouTube / Google LLC</p>
+        <div class="copy-block"><div class="copy-code-text">https://www.youtube.com/creators/get-started/</div></div>
+        <div class="url-card-actions">
+          <a href="https://www.youtube.com/creators/get-started/" target="_blank" rel="noopener noreferrer" class="btn-open-url">↗ Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy="https://www.youtube.com/creators/get-started/">📋 Copiar URL</button>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <h3>6. Configuración Recomendada de Codificación de Subida para YouTube</h3>
+        <p><strong>Organización:</strong> Soporte Técnico de YouTube / Google Engineering</p>
+        <div class="copy-block"><div class="copy-code-text">https://support.google.com/youtube/answer/1722171</div></div>
+        <div class="url-card-actions">
+          <a href="https://support.google.com/youtube/answer/1722171" target="_blank" rel="noopener noreferrer" class="btn-open-url">↗ Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy="https://support.google.com/youtube/answer/1722171">📋 Copiar URL</button>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <h3>7. Deep Neural Networks for YouTube Recommendations</h3>
+        <p><strong>Autoría:</strong> Paul Covington, Jay Adams, Emre Sargin (Google Research / RecSys)</p>
+        <div class="copy-block"><div class="copy-code-text">https://research.google/pubs/deep-neural-networks-for-youtube-recommendations/</div></div>
+        <div class="url-card-actions">
+          <a href="https://research.google/pubs/deep-neural-networks-for-youtube-recommendations/" target="_blank" rel="noopener noreferrer" class="btn-open-url">↗ Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy="https://research.google/pubs/deep-neural-networks-for-youtube-recommendations/">📋 Copiar URL</button>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <h3>8. On YouTube's Recommendation System (Arquitectura y Señales de Satisfacción)</h3>
+        <p><strong>Autoría:</strong> Cristos Goodrow (Vicepresidente de Ingeniería de YouTube)</p>
+        <div class="copy-block"><div class="copy-code-text">https://blog.youtube/inside-youtube/on-youtubes-recommendation-system/</div></div>
+        <div class="url-card-actions">
+          <a href="https://blog.youtube/inside-youtube/on-youtubes-recommendation-system/" target="_blank" rel="noopener noreferrer" class="btn-open-url">↗ Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy="https://blog.youtube/inside-youtube/on-youtubes-recommendation-system/">📋 Copiar URL</button>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <h3>9. Decodificación de Impresiones, CTR y Retención en YouTube Analytics</h3>
+        <p><strong>Organización:</strong> Centro de Asistencia de YouTube / Google</p>
+        <div class="copy-block"><div class="copy-code-text">https://support.google.com/youtube/answer/9314486</div></div>
+        <div class="url-card-actions">
+          <a href="https://support.google.com/youtube/answer/9314486" target="_blank" rel="noopener noreferrer" class="btn-open-url">↗ Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy="https://support.google.com/youtube/answer/9314486">📋 Copiar URL</button>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <h3>10. Directrices de Empaquetado, Títulos y Diseño de Miniaturas para Creadores</h3>
+        <p><strong>Organización:</strong> YouTube Creators Hub / Google LLC</p>
+        <div class="copy-block"><div class="copy-code-text">https://www.youtube.com/creators/grow/overview/</div></div>
+        <div class="url-card-actions">
+          <a href="https://www.youtube.com/creators/grow/overview/" target="_blank" rel="noopener noreferrer" class="btn-open-url">↗ Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy="https://www.youtube.com/creators/grow/overview/">📋 Copiar URL</button>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <h3>11. Metodología y Casos de Estudio Profesional en YouTube</h3>
+        <p><strong>Autoría:</strong> Sean Cannell y Benji Travis (<em>YouTube Secrets 2nd Edition</em>)</p>
+        <div class="copy-block"><div class="copy-code-text">https://courses.seancannell.com/YouTube-Secrets-2nd-Edition</div></div>
+        <div class="url-card-actions">
+          <a href="https://courses.seancannell.com/YouTube-Secrets-2nd-Edition" target="_blank" rel="noopener noreferrer" class="btn-open-url">↗ Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy="https://courses.seancannell.com/YouTube-Secrets-2nd-Edition">📋 Copiar URL</button>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <h3>12. Guía de Contingencia Técnica: Errores de Procesamiento y Subidas Fallidas</h3>
+        <p><strong>Organización:</strong> Centro de Ayuda de YouTube / Google Help Operations</p>
+        <div class="copy-block"><div class="copy-code-text">https://support.google.com/youtube/topic/9257498</div></div>
+        <div class="url-card-actions">
+          <a href="https://support.google.com/youtube/topic/9257498" target="_blank" rel="noopener noreferrer" class="btn-open-url">↗ Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy="https://support.google.com/youtube/topic/9257498">📋 Copiar URL</button>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <h3>13. A Week in the Life of Popular YouTube Channels & Audience Dynamics</h3>
+        <p><strong>Organización:</strong> Pew Research Center (Fact Tank & Computational Social Science Division)</p>
+        <div class="copy-block"><div class="copy-code-text">https://www.pewresearch.org/internet/2019/07/25/a-week-in-the-life-of-popular-youtube-channels/</div></div>
+        <div class="url-card-actions">
+          <a href="https://www.pewresearch.org/internet/2019/07/25/a-week-in-the-life-of-popular-youtube-channels/" target="_blank" rel="noopener noreferrer" class="btn-open-url">↗ Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy="https://www.pewresearch.org/internet/2019/07/25/a-week-in-the-life-of-popular-youtube-channels/">📋 Copiar URL</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       PESTAÑA 15: CRÉDITOS (ORDEN OBLIGATORIO)
+       ======================================================================== -->
+  <section class="tab-section" id="sec-15" data-t="Créditos y Versionado Oficial">
+    <div class="section-header-banner">
+      <h2>Créditos y Ficha Técnica de Edición</h2>
+    </div>
+
+    <div class="content-card">
+      <!-- 2. SVG animado compartido con INICIO -->
+      <div class="svg-stage-wrapper" id="svg-mount-creditos"></div>
+
+      <!-- 3. Breve descripción de la ilustración -->
+      <p style="text-align:center; font-size:0.88rem; color:var(--text-secondary); margin-top:10px;">
+        <strong>Descripción de la ilustración:</strong> Arquitectura multicapa animada que sintetiza el blindaje criptográfico FIDO de la cuenta raíz, el núcleo de emisión audiovisual, los códecs de alta eficiencia VP09/AV01 y la red neuronal de recomendaciones de YouTube Engineering.
+      </p>
+
+      <!-- 4. Nombre del autor (elemento visual más destacado) -->
+      <div class="credits-hero-author">Rubén Sbarsky</div>
+
+      <!-- 5. Texto «Autor del tutorial» -->
+      <div class="credits-role-subtitle">Autor del tutorial</div>
+
+      <!-- 6. Información adicional pertinente + Fecha y hora fija + 7. Versión -->
+      <div class="callout-box info" style="text-align:center;">
+        <p><strong>Material Base de Referencia:</strong> Masterclass de Eloisa Wolf (exmiembro de Google y YouTube) y Documentación Técnica Oficial de Google / YouTube Engineering.</p>
+        <p><strong>Fecha y hora de creación:</strong> 21/11/2026 — 18:28:04</p>
+        <p style="margin-bottom:0;"><strong>Versión del documento:</strong> V001 (Archivo: <code>tutorial_estrategias_maestras_youtube_V001.html</code>)</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Navegación fija inferior entre pestaña Anterior y Siguiente -->
+  <div class="tab-footer-nav" id="tab-footer-nav" aria-label="Navegación secuencial entre secciones"></div>
+
+</main>
+
+<!-- Botones flotantes arrastrables: INICIO y ARRIBA -->
+<button type="button" class="floating-fab" id="fab-home" aria-label="Ir a la pestaña Inicio (botón arrastrable)" title="Ir a Inicio (puedes arrastrarme)">🏠 INICIO</button>
+<button type="button" class="floating-fab" id="fab-top" aria-label="Volver arriba en la pestaña actual (botón arrastrable)" title="Subir al inicio de esta pestaña (puedes arrastrarme)">⬆️ ARRIBA</button>
+
+<!-- Toast de confirmación visual -->
+<div id="toast-feedback" role="status" aria-live="polite"></div>
+
+<script>
+/* ==========================================================================
+   ARQUITECTURA JAVASCRIPT CLEAN CODE (MODULAR, ROBUSTA Y SIN DEPENDENCIAS)
+   ========================================================================== */
+(() => {
+  'use strict';
+
+  const STORAGE_KEYS = {
+    ACTIVE_TAB: 'yt_master_active_tab_v1',
+    THEME: 'yt_master_theme_v1',
+    FONT_SIZE: 'yt_master_fontsize_v1',
+    CHECKLIST: 'yt_master_checklist_v1'
+  };
+
+  const state = {
+    activeTabIndex: 0,
+    fontSize: 16,
+    theme: 'dark',
+    svgTemplateMarkup: '',
+    isSvgPaused: false
+  };
+
+  /* ------------------------------------------------------------------------
+     1. GESTIÓN SEGURA DE ALMACENAMIENTO LOCAL (SAFE STORAGE)
+     ------------------------------------------------------------------------ */
+  const safeStorage = {
+    get(key, fallback) {
+      try {
+        const value = window.localStorage.getItem(key);
+        return value !== null ? value : fallback;
+      } catch (_err) {
+        return fallback;
+      }
+    },
+    set(key, value) {
+      try {
+        window.localStorage.setItem(key, value);
+      } catch (_err) {
+        // Silencioso si localStorage está restringido
+      }
+    }
+  };
+
+  function showToast(message) {
+    const toastEl = document.getElementById('toast-feedback');
+    if (!toastEl) return;
+    toastEl.textContent = message;
+    toastEl.classList.add('show');
+    clearTimeout(toastEl._timer);
+    toastEl._timer = setTimeout(() => {
+      toastEl.classList.remove('show');
+    }, 2600);
+  }
+
+  /* ------------------------------------------------------------------------
+     2. MOTOR DE PLANTILLA ÚNICA SVG ANIMADA (INICIO & CRÉDITOS)
+     ------------------------------------------------------------------------ */
+  function extractAndPurgeSvgTemplate() {
+    const tpl = document.getElementById('master-hero-svg-template');
+    if (!tpl) return;
+    state.svgTemplateMarkup = tpl.innerHTML.trim();
+    tpl.remove(); // Eliminamos del DOM la plantilla original tras extraerla
+  }
+
+  function buildDataUriFallback() {
+    if (!state.svgTemplateMarkup) return '';
+    const cleanSvg = state.svgTemplateMarkup.replace(/__PREFIX__/g, 'fb_');
+    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(cleanSvg);
+  }
+
+  function mountSvgInstance(containerId, uniquePrefix) {
+    const container = document.getElementById(containerId);
+    if (!container || !state.svgTemplateMarkup) return;
+
+    try {
+      const instanceMarkup = state.svgTemplateMarkup.replace(/__PREFIX__/g, uniquePrefix);
+      container.innerHTML = instanceMarkup;
+      if (state.isSvgPaused) {
+        container.classList.add('svg-paused');
+      } else {
+        container.classList.remove('svg-paused');
+      }
+    } catch (_err) {
+      const fallbackImg = document.createElement('img');
+      fallbackImg.src = buildDataUriFallback();
+      fallbackImg.alt = 'Diagrama de ingeniería de canal de YouTube';
+      container.innerHTML = '';
+      container.appendChild(fallbackImg);
+    }
+  }
+
+  function ensureVisibleSvgsMounted() {
+    if (state.activeTabIndex === 0) {
+      const inicioMount = document.getElementById('svg-mount-inicio');
+      if (inicioMount && !inicioMount.querySelector('svg, img')) {
+        mountSvgInstance('svg-mount-inicio', 'svg_ini_');
+      }
+    }
+    if (state.activeTabIndex === 15) {
+      const creditosMount = document.getElementById('svg-mount-creditos');
+      if (creditosMount && !creditosMount.querySelector('svg, img')) {
+        mountSvgInstance('svg-mount-creditos', 'svg_crd_');
+      }
+    }
+  }
+
+  function initSvgAnimationControls() {
+    const toggleBtn = document.getElementById('btn-toggle-svg-anim');
+    if (!toggleBtn) return;
+
+    toggleBtn.addEventListener('click', () => {
+      state.isSvgPaused = !state.isSvgPaused;
+      const containers = [
+        document.getElementById('svg-mount-inicio'),
+        document.getElementById('svg-mount-creditos')
+      ];
+      containers.forEach((el) => {
+        if (el) el.classList.toggle('svg-paused', state.isSvgPaused);
+      });
+      toggleBtn.textContent = state.isSvgPaused ? '▶ Reanudar animación' : '⏸ Pausar animación';
+      toggleBtn.setAttribute('aria-pressed', String(state.isSvgPaused));
+    });
+
+    // Vigilancia periódica para reparar cualquier contenedor visible que quede vacío
+    setInterval(ensureVisibleSvgsMounted, 1500);
+  }
+
+  /* ------------------------------------------------------------------------
+     3. NAVEGACIÓN DE PESTAÑAS, PANEL LATERAL ÍNDICE Y BOTONES ANTERIOR/SIGUIENTE
+     ------------------------------------------------------------------------ */
+  const sections = Array.from(document.querySelectorAll('.tab-section'));
+  const tabChips = Array.from(document.querySelectorAll('.nav-tabs-bar .chip[data-tab]'));
+  const drawerEl = document.getElementById('dr');
+  const menuBtn = document.getElementById('mb');
+
+  function toggleDrawer(forceOpen) {
+    if (!drawerEl || !menuBtn) return;
+    const isOpen = typeof forceOpen === 'boolean'
+      ? forceOpen
+      : !drawerEl.classList.contains('o');
+    drawerEl.classList.toggle('o', isOpen);
+    menuBtn.setAttribute('aria-expanded', String(isOpen));
+  }
+
+  function renderFooterTabButtons(index) {
+    const footerNav = document.getElementById('tab-footer-nav');
+    if (!footerNav) return;
+    footerNav.innerHTML = '';
+
+    if (index > 0) {
+      const prevTitle = tabChips[index - 1] ? tabChips[index - 1].textContent.trim() : 'Anterior';
+      const prevBtn = document.createElement('button');
+      prevBtn.type = 'button';
+      prevBtn.className = 'nav-step-btn prev';
+      prevBtn.innerHTML = `⬅ Anterior: ${prevTitle}`;
+      prevBtn.addEventListener('click', () => navigateToTab(index - 1));
+      footerNav.appendChild(prevBtn);
+    }
+
+    if (index < sections.length - 1) {
+      const nextTitle = tabChips[index + 1] ? tabChips[index + 1].textContent.trim() : 'Siguiente';
+      const nextBtn = document.createElement('button');
+      nextBtn.type = 'button';
+      nextBtn.className = 'nav-step-btn next';
+      nextBtn.innerHTML = `Siguiente: ${nextTitle} ➡`;
+      nextBtn.addEventListener('click', () => navigateToTab(index + 1));
+      footerNav.appendChild(nextBtn);
+    }
+  }
+
+  function navigateToTab(index) {
+    const targetIdx = Math.max(0, Math.min(index, sections.length - 1));
+    state.activeTabIndex = targetIdx;
+
+    sections.forEach((sec, idx) => {
+      sec.classList.toggle('active', idx === targetIdx);
+    });
+
+    tabChips.forEach((chip, idx) => {
+      const isSelected = idx === targetIdx;
+      chip.classList.toggle('active', isSelected);
+      if (isSelected) {
+        chip.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    });
+
+    if (drawerEl) {
+      Array.from(drawerEl.children).forEach((link, idx) => {
+        link.classList.toggle('on', idx === targetIdx);
+      });
+    }
+
+    if (targetIdx === 0) mountSvgInstance('svg-mount-inicio', 'svg_ini_');
+    if (targetIdx === 15) mountSvgInstance('svg-mount-creditos', 'svg_crd_');
+
+    renderFooterTabButtons(targetIdx);
+    safeStorage.set(STORAGE_KEYS.ACTIVE_TAB, String(targetIdx));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  window.navigateToTab = navigateToTab;
+
+  function initNavigationAndIndexDrawer() {
+    if (drawerEl) {
+      sections.forEach((sec, idx) => {
+        const link = document.createElement('a');
+        const labelText = sec.dataset.t || (sec.querySelector('h2') ? sec.querySelector('h2').textContent : `Sección ${idx}`);
+        link.textContent = (idx ? `${idx}. ` : '') + labelText;
+        link.setAttribute('role', 'button');
+        link.tabIndex = 0;
+        link.addEventListener('click', () => {
+          navigateToTab(idx);
+          toggleDrawer(false);
+        });
+        link.addEventListener('keydown', (ev) => {
+          if (ev.key === 'Enter' || ev.key === ' ') {
+            ev.preventDefault();
+            navigateToTab(idx);
+            toggleDrawer(false);
+          }
+        });
+        drawerEl.appendChild(link);
+      });
+    }
+
+    tabChips.forEach((chip) => {
+      chip.addEventListener('click', () => {
+        const idx = Number(chip.dataset.tab);
+        navigateToTab(idx);
+      });
+    });
+
+    if (menuBtn) {
+      menuBtn.addEventListener('click', () => toggleDrawer());
+    }
+
+    const homeIndexBtn = document.getElementById('ix');
+    if (homeIndexBtn) {
+      homeIndexBtn.addEventListener('click', () => toggleDrawer(true));
+    }
+
+    document.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Escape') toggleDrawer(false);
+    });
+
+    document.addEventListener('click', (ev) => {
+      if (!ev.target.closest('#dr, #mb, #ix')) {
+        toggleDrawer(false);
+      }
+    });
+  }
+
+  /* ------------------------------------------------------------------------
+     4. ACORDEÓN DE 33 PREGUNTAS Y RESPUESTAS (PLEGADAS POR DEFECTO)
+     ------------------------------------------------------------------------ */
+  function initQaAccordion() {
+    const qaItems = Array.from(document.querySelectorAll('.qa-item'));
+    const expandAllBtn = document.getElementById('btn-expand-all-qa');
+    const collapseAllBtn = document.getElementById('btn-collapse-all-qa');
+
+    function setItemState(item, shouldOpen) {
+      item.classList.toggle('open', shouldOpen);
+      const btn = item.querySelector('.qa-question-btn');
+      const icon = item.querySelector('.qa-toggle-icon');
+      if (btn) btn.setAttribute('aria-expanded', String(shouldOpen));
+      if (icon) icon.textContent = shouldOpen ? '−' : '+';
+    }
+
+    qaItems.forEach((item) => {
+      setItemState(item, false); // Default estrictamente plegado
+      const btn = item.querySelector('.qa-question-btn');
+      if (btn) {
+        btn.addEventListener('click', () => {
+          const isCurrentlyOpen = item.classList.contains('open');
+          setItemState(item, !isCurrentlyOpen);
+        });
+      }
+    });
+
+    if (expandAllBtn) {
+      expandAllBtn.addEventListener('click', () => {
+        qaItems.forEach((item) => setItemState(item, true));
+        showToast('Todas las 33 respuestas desplegadas');
+      });
+    }
+
+    if (collapseAllBtn) {
+      collapseAllBtn.addEventListener('click', () => {
+        qaItems.forEach((item) => setItemState(item, false));
+        showToast('Todas las 33 respuestas plegadas');
+      });
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     5. BOTONES COPIAR AL PORTAPAPELES CON RESPALDO SEGURO
+     ------------------------------------------------------------------------ */
+  function copyTextToClipboard(text) {
+    try {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(textarea);
+      if (ok) {
+        showToast('✅ Contenido copiado al portapapeles');
+      } else {
+        showToast('⚠️ Selecciona y copia el texto manualmente');
+      }
+    } catch (_err) {
+      showToast('⚠️ No se pudo acceder al portapapeles automáticamente');
+    }
+  }
+
+  function initCopyButtons() {
+    document.querySelectorAll('.btn-copy[data-copy]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const textToCopy = btn.getAttribute('data-copy');
+        if (textToCopy) copyTextToClipboard(textToCopy);
+      });
+    });
+  }
+
+  /* ------------------------------------------------------------------------
+     6. BUSCADOR INTERNO INSTANTÁNEO EN TODAS LAS PESTAÑAS
+     ------------------------------------------------------------------------ */
+  function initGlobalSearch() {
+    const searchInput = document.getElementById('global-search-input');
+    const clearBtn = document.getElementById('search-clear-btn');
+    const resultsPanel = document.getElementById('search-results-panel');
+    if (!searchInput || !resultsPanel) return;
+
+    function runSearch(query) {
+      const cleanQuery = query.trim().toLowerCase();
+      if (clearBtn) clearBtn.style.display = cleanQuery ? 'block' : 'none';
+
+      if (cleanQuery.length < 2) {
+        resultsPanel.style.display = 'none';
+        resultsPanel.innerHTML = '';
+        return;
+      }
+
+      const hits = [];
+      sections.forEach((sec, idx) => {
+        const text = sec.textContent || '';
+        const lowerText = text.toLowerCase();
+        const pos = lowerText.indexOf(cleanQuery);
+        if (pos !== -1) {
+          const start = Math.max(0, pos - 45);
+          const end = Math.min(text.length, pos + cleanQuery.length + 75);
+          const snippet = text.slice(start, end).replace(/\s+/g, ' ').trim();
+          const title = sec.dataset.t || `Pestaña ${idx}`;
+          hits.push({ idx, title, snippet });
+        }
+      });
+
+      resultsPanel.style.display = 'block';
+      if (hits.length === 0) {
+        resultsPanel.innerHTML = `<strong>Sin resultados para "${query}".</strong> Prueba con términos como <em>Passkeys, VP09, 1440p, AdSense, Content ID o Retención</em>.`;
+        return;
+      }
+
+      resultsPanel.innerHTML = `<div style="margin-bottom:8px; font-weight:700; color:var(--accent-primary);">🔍 ${hits.length} secciones encontradas para "${query}":</div>`;
+      hits.forEach((hit) => {
+        const row = document.createElement('div');
+        row.className = 'search-result-hit';
+        row.innerHTML = `<strong>${hit.title}</strong><div style="font-size:0.84rem; color:var(--text-secondary);">...${hit.snippet}...</div>`;
+        row.addEventListener('click', () => {
+          navigateToTab(hit.idx);
+          resultsPanel.style.display = 'none';
+        });
+        resultsPanel.appendChild(row);
+      });
+    }
+
+    searchInput.addEventListener('input', (ev) => runSearch(ev.target.value));
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        runSearch('');
+      });
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     7. CHECKLIST PERSISTENTE, TEMA, TAMAÑO DE FUENTE E IMPRESIÓN PDF
+     ------------------------------------------------------------------------ */
+  function initChecklistPersistence() {
+    let savedMap = {};
+    try {
+      savedMap = JSON.parse(safeStorage.get(STORAGE_KEYS.CHECKLIST, '{}'));
+    } catch (_err) {
+      savedMap = {};
+    }
+
+    document.querySelectorAll('#checklist-container input[type="checkbox"]').forEach((chk) => {
+      const id = chk.dataset.checkId;
+      const row = chk.closest('.checklist-row');
+      if (savedMap[id]) {
+        chk.checked = true;
+        if (row) row.classList.add('checked');
+      }
+      chk.addEventListener('change', () => {
+        savedMap[id] = chk.checked;
+        if (row) row.classList.toggle('checked', chk.checked);
+        safeStorage.set(STORAGE_KEYS.CHECKLIST, JSON.stringify(savedMap));
+      });
+    });
+  }
+
+  function applyTheme(themeName) {
+    state.theme = themeName === 'light' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', state.theme);
+    safeStorage.set(STORAGE_KEYS.THEME, state.theme);
+  }
+
+  function applyFontSize(sizePx) {
+    state.fontSize = Math.max(13, Math.min(22, sizePx));
+    document.documentElement.style.setProperty('--font-size-base', `${state.fontSize}px`);
+    safeStorage.set(STORAGE_KEYS.FONT_SIZE, String(state.fontSize));
+  }
+
+  function initAccessibilityAndPrint() {
+    const savedTheme = safeStorage.get(STORAGE_KEYS.THEME, 'dark');
+    const savedFont = Number(safeStorage.get(STORAGE_KEYS.FONT_SIZE, '16'));
+    applyTheme(savedTheme);
+    applyFontSize(savedFont || 16);
+
+    document.getElementById('btn-theme-toggle')?.addEventListener('click', () => {
+      applyTheme(state.theme === 'dark' ? 'light' : 'dark');
+      showToast(state.theme === 'dark' ? '🌙 Tema oscuro activado' : '☀️ Tema claro activado');
+    });
+
+    document.getElementById('btn-font-inc')?.addEventListener('click', () => {
+      applyFontSize(state.fontSize + 1);
+      showToast(`Tamaño de texto: ${state.fontSize}px`);
+    });
+
+    document.getElementById('btn-font-dec')?.addEventListener('click', () => {
+      applyFontSize(state.fontSize - 1);
+      showToast(`Tamaño de texto: ${state.fontSize}px`);
+    });
+
+    document.getElementById('btn-print-pdf')?.addEventListener('click', () => {
+      try {
+        // 1. Montar ambos SVG antes de imprimir
+        mountSvgInstance('svg-mount-inicio', 'svg_ini_');
+        mountSvgInstance('svg-mount-creditos', 'svg_crd_');
+
+        // 2. Recordar estado de desplegables Q&A y abrirlos temporalmente
+        const qaItems = Array.from(document.querySelectorAll('.qa-item'));
+        const closedItems = qaItems.filter((item) => !item.classList.contains('open'));
+        closedItems.forEach((item) => item.classList.add('open'));
+
+        window.print();
+
+        // 3. Restaurar estado previo tras el diálogo de impresión
+        setTimeout(() => {
+          closedItems.forEach((item) => item.classList.remove('open'));
+        }, 500);
+      } catch (_err) {
+        showToast('Abre este archivo directamente en el navegador y utiliza Ctrl+P o Cmd+P');
+      }
+    });
+  }
+
+  /* ------------------------------------------------------------------------
+     8. BOTONES FLOTANTES ARRASTRABLES (INICIO & ARRIBA) + PROGRESO DE LECTURA
+     ------------------------------------------------------------------------ */
+  function makeDraggableFab(buttonEl, onClickAction) {
+    if (!buttonEl) return;
+    let isDragging = false;
+    let hasMoved = false;
+    let startX = 0;
+    let startY = 0;
+    let initialLeft = 0;
+    let initialTop = 0;
+
+    function onPointerDown(ev) {
+      const point = ev.touches ? ev.touches[0] : ev;
+      isDragging = true;
+      hasMoved = false;
+      const rect = buttonEl.getBoundingClientRect();
+      startX = point.clientX;
+      startY = point.clientY;
+      initialLeft = rect.left;
+      initialTop = rect.top;
+      buttonEl.style.right = 'auto';
+      buttonEl.style.bottom = 'auto';
+      buttonEl.style.left = `${initialLeft}px`;
+      buttonEl.style.top = `${initialTop}px`;
+    }
+
+    function onPointerMove(ev) {
+      if (!isDragging) return;
+      const point = ev.touches ? ev.touches[0] : ev;
+      const dx = point.clientX - startX;
+      const dy = point.clientY - startY;
+      if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+        hasMoved = true;
+      }
+      if (hasMoved) {
+        if (ev.cancelable) ev.preventDefault();
+        const maxLeft = window.innerWidth - buttonEl.offsetWidth - 6;
+        const maxTop = window.innerHeight - buttonEl.offsetHeight - 6;
+        const nextLeft = Math.max(6, Math.min(maxLeft, initialLeft + dx));
+        const nextTop = Math.max(64, Math.min(maxTop, initialTop + dy));
+        buttonEl.style.left = `${nextLeft}px`;
+        buttonEl.style.top = `${nextTop}px`;
+      }
+    }
+
+    function onPointerUp() {
+      if (!isDragging) return;
+      isDragging = false;
+      if (!hasMoved) {
+        onClickAction();
+      }
+    }
+
+    buttonEl.addEventListener('mousedown', onPointerDown);
+    window.addEventListener('mousemove', onPointerMove);
+    window.addEventListener('mouseup', onPointerUp);
+
+    buttonEl.addEventListener('touchstart', onPointerDown, { passive: true });
+    window.addEventListener('touchmove', onPointerMove, { passive: false });
+    window.addEventListener('touchend', onPointerUp);
+  }
+
+  function initFloatingControlsAndProgress() {
+    const fabHome = document.getElementById('fab-home');
+    const fabTop = document.getElementById('fab-top');
+    const progressBar = document.getElementById('reading-progress-bar');
+
+    makeDraggableFab(fabHome, () => {
+      navigateToTab(0);
+      showToast('🏠 Has vuelto a INICIO');
+    });
+
+    makeDraggableFab(fabTop, () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    window.addEventListener('scroll', () => {
+      if (!progressBar) return;
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const pct = docHeight > 0 ? Math.min(100, Math.round((scrollTop / docHeight) * 100)) : 0;
+      progressBar.style.width = `${pct}%`;
+    }, { passive: true });
+  }
+
+  /* ------------------------------------------------------------------------
+     9. INICIALIZACIÓN MAESTRA
+     ------------------------------------------------------------------------ */
+  function bootstrapTutorial() {
+    extractAndPurgeSvgTemplate();
+    initNavigationAndIndexDrawer();
+    initSvgAnimationControls();
+    initQaAccordion();
+    initCopyButtons();
+    initGlobalSearch();
+    initChecklistPersistence();
+    initAccessibilityAndPrint();
+    initFloatingControlsAndProgress();
+
+    const savedTab = Number(safeStorage.get(STORAGE_KEYS.ACTIVE_TAB, '0'));
+    const initialTab = Number.isInteger(savedTab) && savedTab >= 0 && savedTab < sections.length ? savedTab : 0;
+    navigateToTab(initialTab);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootstrapTutorial);
+  } else {
+    bootstrapTutorial();
+  }
+})();
+</script>
+</body>
+</html>
